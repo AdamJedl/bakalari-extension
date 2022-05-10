@@ -441,11 +441,20 @@ window.onload = function Main(){
             
             let weightTemp
             
-            if (subjectTemp == "Programování" && !addedMark.classList.contains("addedMark")) 
-                weightTemp = addedMark.querySelector("div.bod").innerText
-            else 
-                weightTemp = addedMark.querySelector("span.w-100").innerText
-            
+            if (subjectTemp == "Programování" && !addedMark.classList.contains("addedMark")) {
+                
+                if (addedMark.querySelector("div.bod").innerText == "X") 
+                    weightTemp = 10;
+                else
+                    weightTemp = addedMark.querySelector("div.bod").innerText
+            }
+            else {
+                
+                if (addedMark.querySelector("span.w-100").innerText == "X") 
+                    weightTemp = 10;
+                else
+                    weightTemp = addedMark.querySelector("span.w-100").innerText
+            }
 
             addedMark.remove()
 
