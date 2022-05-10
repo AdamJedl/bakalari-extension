@@ -763,8 +763,6 @@ window.onload = function Main(){
         if (subjectMark.length != 0) {
             
             for (let i = 0; i < allSubjects.length ; i++) { 
-                console.log(i + " | ")
-                console.log(subjectMark[i])
                 sumRight += subjectMark[i][1] == "-" ? 
                     parseInt(subjectMark[i][0].innerText) : 
                     parseInt(subjectMark[i].innerText)
