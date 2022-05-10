@@ -1,0 +1,15 @@
+{
+   "content_scripts": [ {
+      "css": [ "content.css" ],
+      "js": [ "content.js" ],
+      "matches": [ "https://*/next/prubzna.aspx" ]
+   } ],
+   "default_locale": "en",
+   "description": "__MSG_extension_description__",
+   "host_permissions": [ "https://*/next/prubzna.aspx" ],
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6g/nePAZLd2z1UJVvgV2ZHgf8EoYZRY4YbarTOtEgtCYrPduDQscjYGOfRJeEMR9C+jPcCY5EYpTkffAMephMsZsG7kPWELJLTeqqHtie1sI6vWIMNaYDcgYE1nkULy0M0l+RV1oII7rfqVsr0B+4V4Hd9ykYOyrVHRFWwdDU/eNCS0ynQFEEFDKaP4fs7kqgcSoQ/adQlQzeccpDljTWecmEvFDoqmUKAAqXUHTnIxBAmtDQRosghDzlPKCUjzNauFo4srePafNKCL828K/pMhLH260l5MgBVQcpMTMVasQevfszD8P9xDjgOLpALSTF6g1tDr7rrAHGn+IKOsYQQIDAQAB",
+   "manifest_version": 3,
+   "name": "__MSG_extension_name__",
+   "permissions": [ "storage" ],
+   "version": "1.0"
+}
