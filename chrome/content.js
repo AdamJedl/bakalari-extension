@@ -30,8 +30,9 @@ if (language == "cs") {
         maxPointsAreInvalid:"Maximalní počet bodů je neplatný.",
         removeMark:"Opravdu chcete odstranit známku? ",
         overallAverage:"Celkový průměr",
-        subject:"Předmět"
-        
+        subject:"Předmět",
+        replaceWeightXWith10:"Nahradit váhu X na 10",
+        clickOnBtReplaceWeightXWith10:"Změna se projeví po znovu načtení stránky."
     }
 }
 else {
@@ -58,7 +59,9 @@ else {
         maxPointsAreInvalid:"Max points are invalid.",
         removeMark:"Are you sure you want to remove a mark?",
         overallAverage:"Overall average",
-        subject:"Subject"
+        subject:"Subject",
+        replaceWeightXWith10:"Replace weight X with 10",
+        clickOnBtReplaceWeightXWith10:"Change will take effect after the page is refreshed."
     }
 }
 
@@ -74,6 +77,7 @@ let hideWeightFromPointsOn = JSON.parse(localStorage.getItem("hideWeightFromPoin
 let predictorOn = JSON.parse(localStorage.getItem("predictorOn"))
 let removeMarksOn = JSON.parse(localStorage.getItem("removeMarkOn"))
 let instaRemoveMarksOn = JSON.parse(localStorage.getItem("instaRemoveMarksOn"))
+let replaceWeightXWith10On = JSON.parse(localStorage.getItem("replaceWeightXWith10On"))
 
 
 wideModeOn = wideModeOn || false
@@ -83,6 +87,7 @@ hideWeightFromPointsOn = hideWeightFromPointsOn || false
 predictorOn = predictorOn || false
 removeMarksOn = removeMarksOn || false
 instaRemoveMarksOn = instaRemoveMarksOn || false
+replaceWeightXWith10On = replaceWeightXWith10On || false
 
 
 let subjectArray = []
@@ -131,6 +136,13 @@ waitForElementToDisplay("div#obsah._loadingContainer:nth-child(10) > div > main 
         hideWeightFromPointsOn = !hideWeightFromPointsOn
 
         hideWeightFromMarksWithPoints()
+    }
+
+    if (replaceWeightXWith10On) {
+        
+        replaceWeightXWith10On = !replaceWeightXWith10On
+
+        replaceWeightXWith10()
     }
 
     let allMarksSelector = document.querySelectorAll("div.znamka-v.tooltip-bubble")
@@ -189,6 +201,7 @@ waitForElementToDisplay("div#obsah._loadingContainer:nth-child(10) > div > main 
     createBt(wideModeOn, msg.wideMode, "btWideMode", wideModeButton, document.getElementById("settingsMenuDiv"))
     createBt(hugeMarksOn, msg.bigMarks, "btHugeMarks", hugeMarksButton, document.getElementById("settingsMenuDiv"))
     createBt(hideWeightFromPointsOn, msg.hideWeightPoints, "btHideWeightFromPoints", hideWeightFromMarksWithPoints, document.getElementById("settingsMenuDiv"))
+    createBt(replaceWeightXWith10On, msg.replaceWeightXWith10, "btReplaceWeightXWith10", replaceWeightXWith10, document.getElementById("settingsMenuDiv"))
 
     createBt(language == "cs", "CS", "btCs", function () {changeLanguage(this)}, document.getElementById("settingsMenuDiv"))
     document.getElementById("btCs").style.cssText += "border-radius: 16px 0px 0px 16px;"
@@ -704,6 +717,30 @@ waitForElementToDisplay("div#obsah._loadingContainer:nth-child(10) > div > main 
 
             alert("Změna jazyka se projeví po znovu načtení stránky.\nThe language change will take effect after the page is refreshed.")
         }
+    }
+
+    function replaceWeightXWith10() { 
+
+        if (!replaceWeightXWith10On) {
+            
+            const allMarksWeight = document.querySelectorAll("div.znamka-v.tooltip-bubble > div.dodatek > span.w-100")
+        
+            for (let i = 0; i < allMarksWeight.length; i++) {
+
+                if (allMarksWeight[i].innerText == "X") allMarksWeight[i].innerText = 10;
+            }
+        }
+        else alert(msg.clickOnBtReplaceWeightXWith10)
+
+
+        replaceWeightXWith10On = !replaceWeightXWith10On
+
+        if (document.getElementById("btReplaceWeightXWith10")) {
+            if (replaceWeightXWith10On) document.getElementById("btReplaceWeightXWith10").classList.remove("ext-disabled")
+            else document.getElementById("btReplaceWeightXWith10").classList.add("ext-disabled")
+        }
+
+        localStorage.setItem("replaceWeightXWith10On", replaceWeightXWith10On)
     }
 
     function refreshOrCreateAverage(addedMarkOn) {
