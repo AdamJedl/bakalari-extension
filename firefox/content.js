@@ -742,6 +742,8 @@ waitForElementToDisplay("div#obsah._loadingContainer:nth-child(10) > div > main 
                 
                 console.log(`${msg.subject}: ${allSubjects[y]}   ${msg.percentage}: ${percentage}`)
 
+                //textBelowSubject[y].innerText = `${msg.percentage}: ${(Math.round((percentage + Number.EPSILON) * 100000) / 100000).toFixed(2)}%`
+                
                 textBelowSubject[y].outerHTML = `<h2 title="${msg.percentage}: ${percentage}%" class="ext-h2">${msg.percentage}: ${(Math.round((percentage + Number.EPSILON) * 100000) / 100000).toFixed(2)}%</h2>`
 
                 //#region This can be wrong ↴
@@ -759,10 +761,14 @@ waitForElementToDisplay("div#obsah._loadingContainer:nth-child(10) > div > main 
 
                 console.log(`${msg.subject}: ${allSubjects[y]}   ${msg.average}: ${average}`)
 
+                //textBelowSubject[y].innerText = `${msg.average}: ${(Math.round((average + Number.EPSILON) * 100000) / 100000).toFixed(2)}`
+                
                 textBelowSubject[y].outerHTML = `<h2 title="${msg.average}: ${average}" class="ext-h2">${msg.average}: ${(Math.round((average + Number.EPSILON) * 100000) / 100000).toFixed(2)}</h2>`
 
                 if (!isNaN(average)) sumLeft += Math.round(average)
             }
+            
+            //if (!addedMarkOn) textBelowSubject[y].outerHTML = `<h2 class="ext-h2">${textBelowSubject[y].innerText}</h2>`  
         }
 
         const subjectMark = document.querySelectorAll("div.leva > div.hlavni > div")
