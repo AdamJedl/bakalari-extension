@@ -1085,7 +1085,7 @@ const observer = new MutationObserver((_, obs) => {
 
     const pointsOfFirstMarkInAllSubjects: NodeListOf<Element> =
       document.querySelectorAll(
-        "div.znamky > div.znamka-v.tooltip-bubble > div.bod:nth-child(2)"
+        "div.znamky > div.znamka-v.tooltip-bubble:nth-child(2) > div.bod"
       );
 
     for (const [
