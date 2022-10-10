@@ -1,0 +1,57 @@
+{
+  "extends": [
+    "hardcore",
+    "hardcore/ts"
+  ],
+
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+
+  "env": {
+    "browser": true
+  },
+
+  "overrides": [
+    {
+      "files": ["server/**/*.ts"],
+      "extends": ["hardcore/node"],
+      "env": {
+        "browser": false
+      }
+    }
+  ],
+  "rules": {
+    "no-console": "off",
+    "no-plusplus": "off",
+    "@typescript-eslint/no-magic-numbers": "off",
+    "@typescript-eslint/naming-convention": "warn",
+    "prettier/prettier": "warn",
+    "no-continue": "off",
+    "@typescript-eslint/no-unnecessary-condition": ["warn", { "allowConstantLoopConditions": true }],
+    "no-constant-condition": ["error", { "checkLoops": false }],
+    "@typescript-eslint/quotes": "off",
+    "import/unambiguous": "off",
+    "complexity": ["error", 30],
+    // "max-statements": ["error", {"max": 40 }, { "ignoreTopLevelFunctions": true }],
+    "sonarjs/cognitive-complexity": ["error", 40],
+    "max-lines": ["error", 1500],
+    "@typescript-eslint/consistent-type-assertions": "error",
+    "func-names": "warn",
+    "@typescript-eslint/no-invalid-this": "warn",
+    "@typescript-eslint/no-non-null-assertion": "warn",
+    "no-alert": "off",
+    "@typescript-eslint/no-shadow": "warn",
+    "@typescript-eslint/prefer-readonly-parameter-types": "warn",
+    "unicorn/prefer-query-selector": "warn",
+    "id-length": ["warn", { "min": 1 }],
+    "unicorn/prefer-number-properties": "warn",
+    "no-nested-ternary": "warn",
+    "etc/no-commented-out-code": "warn",
+    "no-restricted-globals": "warn",
+    "max-len": ["error", { "code": 160 }],
+    "max-params": ["error", 6],
+
+    "max-statements": ["error", {"max": 70 }, { "ignoreTopLevelFunctions": true }]
+  }
+}
