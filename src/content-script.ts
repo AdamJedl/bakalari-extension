@@ -361,7 +361,7 @@ function removeMark(addedMark: Element) {
     const subjectIndex = Array.from(parentElementXTimes(addedMark, 5).children).indexOf(parentElementXTimes(addedMark, 4)) / 3 - 1;
 
     const subjectTemporary = allSubjects[subjectIndex];
-    const markTemporary = addedMark.querySelector<HTMLElement>("div.ob")!.textContent;
+    const markTemporary = addedMark.querySelector<HTMLElement>("div.ob")!.textContent?.trim();
 
     let weightTemporary;
 
