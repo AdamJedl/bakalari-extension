@@ -1063,6 +1063,21 @@ const observer = new MutationObserver((_, obs) => {
       }
     }
 
+    document.querySelector("div.bk-menu-hide")?.addEventListener(
+      "click",
+      function () {
+        if (document.querySelector("div.bk-menu-hide")!.clientWidth < 150) {
+          fixAllAbxNext();
+        }
+        else {
+          setTimeout(() => {
+            fixAllAbxNext();
+          }, 300);
+        }
+      },
+      false
+    );
+
     if(document.querySelectorAll<HTMLElement>("div.znamka-v > div.dodatek").length !== document.querySelectorAll<HTMLElement>("div.znamka-v > div.dodatek > span.w-100").length) {
       for (const element of allMarks) {
         if (element.querySelector(".dodatek > span.w-100") === null) {
