@@ -6,7 +6,7 @@
 // @match       https://*/next/pololetni.aspx
 // @grant       GM_addStyle
 // @run-at      document-start
-// @version     1.1.0
+// @version     1.1.1
 // @author      AdamJedl
 // @homepageURL https://github.com/AdamJedl/bakalari-extension
 // @license     GPL-3.0
