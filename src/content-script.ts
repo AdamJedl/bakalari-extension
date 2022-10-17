@@ -346,16 +346,16 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
   );
 }
 
+function parentElementXTimes(element: Element, x: number) {
+  let parent = element;
+  for (let index = 0; index < x; index++) {
+    parent = parent.parentElement!;
+  }
+  return parent;
+}
+
 function removeMark(addedMark: Element) {
 
-  function parentElementXTimes(element: Element, x: number) {
-    let parent = element;
-    for (let index = 0; index < x; index++) {
-      parent = parent.parentElement!;
-    }
-    return parent;
-  }
-  
   function removeMarkIdk() {
     
     const subjectIndex = Array.from(parentElementXTimes(addedMark, 5).children).indexOf(parentElementXTimes(addedMark, 4)) / 3 - 1;
@@ -537,10 +537,12 @@ function hideWeightFromMarksWithPoints() {
     "div.znamka-v.tooltip-bubble:nth-child(1) > div.bod"
   );
 
-  for (const [index, element] of firstMarkInSubjectPoint.entries()) {
+  for (const element of firstMarkInSubjectPoint) {
     if (element.innerHTML.trim() === "") {
       continue;
     }
+
+    const index = Array.from(parentElementXTimes(element.parentElement!, 5).children).indexOf(parentElementXTimes(element.parentElement!, 4)) / 3 - 1;
 
     let allMarksOf1SubjectWeight = document.querySelectorAll<HTMLElement>(
       `div.predmet-radek:nth-child(${
