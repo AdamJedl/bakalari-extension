@@ -612,8 +612,6 @@ function hideWeightFromMarksWithPoints() {
         allMarksOf1SubjectPoints[y].style.cssText += "font-size: 9px; line-height: 50px;";
       }
     }
-
-    break;
   }
 
   isHideWeightFromPointsOn = !isHideWeightFromPointsOn;
