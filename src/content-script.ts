@@ -346,18 +346,18 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
   );
 }
 
-function parentElementXTimes(element: Element, x: number) {
-  let parent = element;
-  for (let index = 0; index < x; index++) {
-    parent = parent.parentElement!;
-  }
-  return parent;
-}
-
 function removeMark(addedMark: Element) {
 
+  function parentElementXTimes(element: Element, x: number) {
+    let parent = element;
+    for (let index = 0; index < x; index++) {
+      parent = parent.parentElement!;
+    }
+    return parent;
+  }
+
   function removeMarkIdk() {
-    
+
     const subjectIndex = Array.from(parentElementXTimes(addedMark, 5).children).indexOf(parentElementXTimes(addedMark, 4)) / 3 - 1;
 
     const subjectTemporary = allSubjects[subjectIndex];
@@ -533,16 +533,26 @@ function wideModeButton() {
 }
 
 function hideWeightFromMarksWithPoints() {
+
+  function getParentPredmetRadek(element: Element) {
+    let parent = element;
+    while (parent.className !== "predmet-radek") {
+      parent = parent.parentElement!;
+    }
+    return parent;
+  }
+
   const firstMarkInSubjectPoint = document.querySelectorAll(
     "div.znamka-v.tooltip-bubble:nth-child(1) > div.bod"
   );
 
   for (const element of firstMarkInSubjectPoint) {
+
     if (element.innerHTML.trim() === "") {
       continue;
     }
 
-    const index = Array.from(parentElementXTimes(element.parentElement!, 5).children).indexOf(parentElementXTimes(element.parentElement!, 4)) / 3 - 1;
+    const index = Array.from(getParentPredmetRadek(element).parentElement!.children).indexOf(getParentPredmetRadek(element)) / 3 - 1;
 
     let allMarksOf1SubjectWeight = document.querySelectorAll<HTMLElement>(
       `div.predmet-radek:nth-child(${
@@ -1083,7 +1093,7 @@ const observer = new MutationObserver((_, obs) => {
         if (element.querySelector(".dodatek > span.w-100") === null) {
           const splitArray = element.dataset.clasif!.split('vaha":');
           const splitArray2 = splitArray[3].split('MarkText":"');
-  
+
           const markWeight = document.createElement("span");
           markWeight.className = "w-100 d-inline-block";
           markWeight.textContent = splitArray2[0].split(",")[0];
