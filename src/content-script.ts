@@ -170,20 +170,20 @@ function isSubjectWithPoints(subject: string): boolean {
   return false;
 }
 
-function convertPercentageToAverage(percentage: number): number {
+function convertPercentageToAverage(percentage: number, markPercentage: number[]): number {
   if (isNaN(percentage)) {
     return Number.NaN;
   }
-  if (percentage >= 83) {
+  if (percentage >= markPercentage[0]) {
     return 1;
   }
-  if (percentage >= 67) {
+  if (percentage >= markPercentage[1]) {
     return 2;
   }
-  if (percentage >= 50) {
+  if (percentage >= markPercentage[2]) {
     return 3;
   }
-  if (percentage >= 33) {
+  if (percentage >= markPercentage[3]) {
     return 4;
   }
   return 5;
@@ -200,7 +200,7 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
 
   isSubjectMarkWorseThan3Left = false;
   isSubjectMarkWorseThan3Right = false;
-  
+
   let sumLeft = 0;
 
   const textBelowSubject = addedMarkOn
@@ -236,30 +236,26 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
         `${message.subject}: ${allSubject}   ${message.percentage}: ${percentage}`
       );
 
+      const markPercentage: number[] = allSubject === "Databáze" ? [88, 76, 64, 51] : [83, 67, 50, 33];
+
       textBelowSubject[y].outerHTML = `<h2 title="${
         message.percentage
       }: ${percentage}% (${convertPercentageToAverage(
-        percentage
+        percentage, markPercentage
       )})" class="ext-h2">${message.percentage}: ${(
         Math.round((percentage + Number.EPSILON) * 100_000) / 100_000
-      ).toFixed(2)}% (${convertPercentageToAverage(percentage)})</h2>`;
+      ).toFixed(2)}% (${convertPercentageToAverage(percentage, markPercentage)})</h2>`;
 
       if (!isNaN(percentage)) {
         numberOfValidTextsBelowSubject++;
 
-        if (percentage >= 83) {
-          sumLeft += 1;
-        } else if (percentage >= 67) {
-          sumLeft += 2;
-        } else if (percentage >= 50) {
-          sumLeft += 3;
-        } else if (percentage >= 33) {
-          sumLeft += 4;
-          isSubjectMarkWorseThan3Left = true;
-        } else {
-          sumLeft += 5;
+        const sumLeftTemporary = convertPercentageToAverage(percentage, markPercentage);
+
+        if (sumLeftTemporary === 4 || sumLeftTemporary === 5) {
           isSubjectMarkWorseThan3Left = true;
         }
+
+        sumLeft += sumLeftTemporary;
       }
     } else {
       const average = sum / quantity;
