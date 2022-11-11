@@ -1153,11 +1153,9 @@ const observer = new MutationObserver((_, obs) => {
     const allMarksSelector = document.querySelectorAll<HTMLElement>("div.znamka-v.tooltip-bubble");
 
     for (const element of allMarksSelector) {
-      const splitArray = element.dataset.clasif!.split('vaha":');
+      const splitArray = element.getAttribute("data-clasif")!.split('vaha":');
 
       const splitArray2 = splitArray[3].split('MarkText":"');
-
-      const splitArraySubject = splitArray[2].split('"')[3];
 
       const splitArrayMark = splitArray2[1].split('"')[0];
 
@@ -1169,21 +1167,23 @@ const observer = new MutationObserver((_, obs) => {
           splitArrayMark === "X"
         )
       ) {
+        const splitArraySubject = splitArray[2].split('"')[3];
+
         if (isSubjectWithPoints(splitArraySubject)) {
-          weightArray.push(splitArray[0].split('bodymax":')[1].split(',"')[0]);
+          const splitArrayWeight = splitArray[0].split('bodymax":')[1].split(',"')[0];
+
+          weightArray.push(splitArrayWeight);
 
           console.debug(
-            `subject: ${splitArraySubject} mark: ${splitArrayMark} weight: ${
-              splitArray[0].split(`bodymax":`)[1].split(`,"`)[0]
-            }`
+            `subject: ${splitArraySubject} mark: ${splitArrayMark} weight: ${splitArrayWeight}`
           );
         } else {
-          weightArray.push(splitArray2[0].split(",")[0]);
+          const splitArrayWeight = splitArray2[0].split(",")[0];
+
+          weightArray.push(splitArrayWeight);
 
           console.debug(
-            `subject: ${splitArraySubject} mark: ${splitArrayMark} weight: ${
-              splitArray2[0].split(`,`)[0]
-            }`
+            `subject: ${splitArraySubject} mark: ${splitArrayMark} weight: ${splitArrayWeight}`
           );
         }
 
