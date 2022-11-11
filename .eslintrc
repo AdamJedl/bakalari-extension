@@ -51,6 +51,11 @@
     "no-restricted-globals": "warn",
     "max-len": ["error", { "code": 160 }],
     "max-params": ["error", 6],
+    "unicorn/prefer-dom-node-dataset": "off", // getAttribute() is faster
+    "prefer-destructuring": "off",
+    "putout/putout": "off",
+    "@typescript-eslint/init-declarations": "off",
+
 
     "max-statements": ["error", {"max": 70 }, { "ignoreTopLevelFunctions": true }]
   }
