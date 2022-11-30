@@ -126,27 +126,33 @@ function isNanStrict(a: string) {
   return Number.isNaN(Number(a)) || a.trim() === "";
 }
 
+function getpredmetRadekFromIndex(index: number) {
+  const cphmain = document.querySelector("#cphmain_DivBySubject")!.querySelectorAll("div.predmet-radek:is([id])");
+
+  for (const [index2, element] of cphmain.entries()) {
+
+    if (index2 === index) {
+      return element;
+    }
+  }
+
+  throw new Error(`predmetRadek with index ${index} doesn't exist`);
+}
+
 function fixAbxNext(index: number) {
-  const divZnamkyDiv = document.querySelectorAll(
-    `div.predmet-radek:nth-child(${
-      (index + 1) * 3 + 1
-    }) > div.bx-wrapper:nth-child(2) > div.bx-viewport:nth-child(1) > div.znamky > div`
+  const divZnamkyDiv = getpredmetRadekFromIndex(index).querySelectorAll(
+    `div.bx-wrapper:nth-child(2) > div.bx-viewport:nth-child(1) > div.znamky > div`
   );
 
-  const aBxNextSelector = document.querySelector(
-    `div.predmet-radek:nth-child(${
-      (index + 1) * 3 + 1
-    }) > div.bx-wrapper:nth-child(2) > div.bx-controls.bx-has-controls-direction:nth-child(2) > div.bx-controls-direction > a.bx-next:nth-child(2)`
+  const aBxNextSelector = getpredmetRadekFromIndex(index).querySelector(
+    `div.bx-wrapper:nth-child(2) > div.bx-controls.bx-has-controls-direction:nth-child(2) > div.bx-controls-direction > a.bx-next:nth-child(2)`
   );
 
   if (divZnamkyDiv.length > 1) {
     const isMarksWidthBiggerThanViewport =
       divZnamkyDiv.length * divZnamkyDiv[0].clientWidth >
-      document.querySelector(
-        `div.predmet-radek:nth-child(${
-          (index + 1) * 3 + 1
-        }) > div.bx-wrapper > div.bx-viewport`
-      )!.clientWidth;
+      
+    getpredmetRadekFromIndex(index).querySelector(`div.bx-wrapper > div.bx-viewport`)!.clientWidth;
 
     if (
       (!isMarksWidthBiggerThanViewport &&
@@ -372,19 +378,30 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
   );
 }
 
-function removeMark(addedMark: Element) {
-
-  function parentElementXTimes(element: Element, x: number) {
-    let parent = element;
-    for (let index = 0; index < x; index++) {
-      parent = parent.parentElement!;
-    }
-    return parent;
+function getParentPredmetRadek(element: Element) {
+  let parent = element;
+  while (parent.className !== "predmet-radek") {
+    parent = parent.parentElement!;
   }
+  return parent;
+}
+
+function removeMark(addedMark: Element) {
 
   function removeMarkIdk() {
 
-    const subjectIndex = Array.from(parentElementXTimes(addedMark, 5).children).indexOf(parentElementXTimes(addedMark, 4)) / 3 - 1;
+    const predmetRadek = getParentPredmetRadek(addedMark);
+    const cphmain = document.querySelector("#cphmain_DivBySubject")!.children;
+    let subjectIndex = 0;
+
+    for (const element of cphmain) {
+      if (element === predmetRadek) {
+        break;
+      }
+      else if (element.id !== "") {
+        subjectIndex++;
+      }
+    }
 
     const subjectTemporary = allSubjects[subjectIndex];
     const markTemporary = addedMark.querySelector<HTMLElement>("div.ob")!.textContent?.trim();
@@ -424,9 +441,8 @@ function removeMark(addedMark: Element) {
     }
 
     refreshOrCreateAverage(true);
-
   }
-  
+
   if (isInstaRemoveMarksOn || isRemoveMarksOn && confirm(message.removeMark)) {
     removeMarkIdk();
   }
@@ -481,7 +497,17 @@ function addMarkButton() {
 
   weightArray.push(weightTemporary);
 
-  const divPredmetRadekSelector = document.querySelector(`div.predmet-radek:nth-child(${(select.selectedIndex + 1) * 3 + 1}) > div > div > div.znamky`);
+  const cphmain = document.querySelector("#cphmain_DivBySubject")!.querySelectorAll("div.predmet-radek:is([id])");
+  let predmetRadek: Element;
+
+  for (const [index, element] of cphmain.entries()) {
+    if (index === select.selectedIndex) {
+      predmetRadek = element;
+      break;
+    }
+  }
+
+  const divPredmetRadekSelector = predmetRadek!.querySelector(`div > div > div.znamky`);
 
   const addedMarkCreate = document.createElement("div");
   addedMarkCreate.id = "addedMark";
@@ -508,6 +534,12 @@ function addMarkButton() {
   );
 
   document.querySelector("#addedMark")!.id = "";
+
+  
+  if (divPredmetRadekSelector!.parentElement!.parentElement!.parentElement!.classList.contains("hide-bx-wrapper")) {
+    divPredmetRadekSelector!.parentElement!.parentElement!.parentElement!.classList.remove("hide-bx-wrapper");
+    window.dispatchEvent(new Event("resize"));
+  }
 
   fixAbxNext(select.selectedIndex);
 
@@ -560,14 +592,6 @@ function wideModeButton() {
 
 function hideWeightFromMarksWithPoints() {
 
-  function getParentPredmetRadek(element: Element) {
-    let parent = element;
-    while (parent.className !== "predmet-radek") {
-      parent = parent.parentElement!;
-    }
-    return parent;
-  }
-
   const firstMarkInSubjectPoint = document.querySelectorAll(
     "div.znamka-v.tooltip-bubble:nth-child(1) > div.bod"
   );
@@ -578,32 +602,34 @@ function hideWeightFromMarksWithPoints() {
       continue;
     }
 
-    const index = Array.from(getParentPredmetRadek(element).parentElement!.children).indexOf(getParentPredmetRadek(element)) / 3 - 1;
+    let index = 0;
+    const cphmain = document.querySelector("#cphmain_DivBySubject")!.querySelectorAll("div.predmet-radek:is([id])");
+    const predmetRadek = getParentPredmetRadek(element);
 
-    let allMarksOf1SubjectWeight = document.querySelectorAll<HTMLElement>(
-      `div.predmet-radek:nth-child(${
-        (index + 1) * 3 + 1
-      }) > div.bx-wrapper:nth-child(2) > div.bx-viewport:nth-child(1) > div.znamky > div.znamka-v.tooltip-bubble > div.dodatek > span.w-100`
+    for (const element2 of cphmain) {
+      if (element2 === predmetRadek) {
+        break;
+      }
+
+      index++;
+    }
+
+    let allMarksOf1SubjectWeight = getpredmetRadekFromIndex(index).querySelectorAll<HTMLElement>(
+      `div.bx-wrapper:nth-child(2) > div.bx-viewport:nth-child(1) > div.znamky > div.znamka-v.tooltip-bubble > div.dodatek > span.w-100`
     );
-    let allMarksOf1SubjectPoints = document.querySelectorAll<HTMLElement>(
-      `div.predmet-radek:nth-child(${
-        (index + 1) * 3 + 1
-      }) > div.bx-wrapper:nth-child(2) > div.bx-viewport:nth-child(1) > div.znamky > div.znamka-v.tooltip-bubble > div.bod`
+    let allMarksOf1SubjectPoints = getpredmetRadekFromIndex(index).querySelectorAll<HTMLElement>(
+      `div.bx-wrapper:nth-child(2) > div.bx-viewport:nth-child(1) > div.znamky > div.znamka-v.tooltip-bubble > div.bod`
     );
 
     if (allMarksOf1SubjectWeight.length === 0) {
-      allMarksOf1SubjectWeight = document.querySelectorAll(
-        `div.predmet-radek:nth-child(${
-          (index + 1) * 3 + 1
-        }) > div.znamky > div.znamka-v.tooltip-bubble > div.dodatek > span.w-100`
+      allMarksOf1SubjectWeight = getpredmetRadekFromIndex(index).querySelectorAll(
+        `div.znamky > div.znamka-v.tooltip-bubble > div.dodatek > span.w-100`
       );
     }
 
     if (allMarksOf1SubjectPoints.length === 0) {
-      allMarksOf1SubjectPoints = document.querySelectorAll(
-        `div.predmet-radek:nth-child(${
-          (index + 1) * 3 + 1
-        }) > div.znamky > div.znamka-v.tooltip-bubble > div.bod`
+      allMarksOf1SubjectPoints = getpredmetRadekFromIndex(index).querySelectorAll(
+        `div.znamky > div.znamka-v.tooltip-bubble > div.bod`
       );
     }
 
@@ -1139,12 +1165,39 @@ const observer = new MutationObserver((_, obs) => {
         "div.znamky > div.znamka-v.tooltip-bubble:nth-child(1) > div.bod"
       );
 
-    for (const [
-      index,
-      pointsOfFirstMarkInAllSubject,
-    ] of pointsOfFirstMarkInAllSubjects.entries()) {
-      if (pointsOfFirstMarkInAllSubject.innerHTML !== "") {
-        subjectsWithPoints.push(allSubjects[index]);
+
+    if (allMarks.length == pointsOfFirstMarkInAllSubjects.length) {
+      for (const [
+        index,
+        pointsOfFirstMarkInAllSubject,
+      ] of pointsOfFirstMarkInAllSubjects.entries()) {
+        if (pointsOfFirstMarkInAllSubject.innerHTML !== "") {
+          subjectsWithPoints.push(allSubjects[index]);
+        }
+      }
+    }
+    else {
+      for (
+        const pointsOfFirstMarkInAllSubject
+       of pointsOfFirstMarkInAllSubjects) {
+        if (pointsOfFirstMarkInAllSubject.innerHTML !== "") {
+          
+          const predmetRadek = getParentPredmetRadek(pointsOfFirstMarkInAllSubject);
+          const PredmetRadekChildrens = predmetRadek.parentElement!.querySelectorAll("div.predmet-radek:is([id])");
+
+          let numberOfSubjects = 0;
+
+          for (const element of PredmetRadekChildrens) {
+            
+            if (element == predmetRadek) {
+              break;
+            }
+
+            numberOfSubjects++;
+          }
+
+          subjectsWithPoints.push(allSubjects[numberOfSubjects]);
+        }
       }
     }
 
