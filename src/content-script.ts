@@ -209,10 +209,10 @@ function convertPercentageToAverage(percentage: number, markPercentage: number[]
   return 5;
 }
 
-function headerInnerHTML(string1: string, string2: string, title1: string) {
+function headerInnerHTML(string1: string, string2: string, title1: string, title2: string) {
   return `<div id="h2OverallAverage" style="padding-left: 14px; color: black; padding-bottom: 20px;">
-            <h2 title="${title1}" style="color: black;padding-right: 140px;font-size: 1.5em;width: 60px;">${string1}</h2>
-            <h2 title="${title1}" title="" style="color: black;font-size: 1.5em;">${string2}</h2>
+            <h2 title="${title1}" style="color: black;margin-right: 140px;font-size: 1.5em;width: 60px;">${string1}</h2>
+            <h2 title="${title2}" title="" style="color: black;font-size: 1.5em;">${string2}</h2>
           </div>`;
 }
 
@@ -348,7 +348,8 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
       !isNanStrict(overallAverageRightRounded.toString())
       ? overallAverageRightRounded.toString()
       : "",
-    message.overallAverage
+    `${message.overallAverage}: ${overallAverageLeft}`,
+    `${message.overallAverage}: ${overallAverageRight}`
   );
 
   let headerStipendium;
@@ -366,6 +367,7 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
   headerStipendium.innerHTML = headerInnerHTML(
     `${stipendium(overallAverageLeftRounded, "left")},-`,
     subjectMark.length > 0 && !isNanStrict(overallAverageRightRounded.toString()) ? `${stipendium(overallAverageRightRounded, "right")},-` : "",
+    "Stipendium",
     "Stipendium"
   );
 }
