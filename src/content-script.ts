@@ -171,19 +171,39 @@ function isSubjectWithPoints(subject: string): boolean {
 }
 
 function convertPercentageToAverage(percentage: number, markPercentage: number[]): number {
+
+  if (markPercentage[4]) {
+    if (isNaN(percentage)) {
+      return Number.NaN;
+    }
+    if (percentage >= markPercentage[0]) {
+      return 1;
+    }
+    if (percentage >= markPercentage[1]) {
+      return 2;
+    }
+    if (percentage >= markPercentage[2]) {
+      return 3;
+    }
+    if (percentage >= markPercentage[3]) {
+      return 4;
+    }
+    return 5;
+  }
+
   if (isNaN(percentage)) {
     return Number.NaN;
   }
-  if (percentage >= markPercentage[0]) {
+  if (percentage > markPercentage[0]) {
     return 1;
   }
-  if (percentage >= markPercentage[1]) {
+  if (percentage > markPercentage[1]) {
     return 2;
   }
-  if (percentage >= markPercentage[2]) {
+  if (percentage > markPercentage[2]) {
     return 3;
   }
-  if (percentage >= markPercentage[3]) {
+  if (percentage > markPercentage[3]) {
     return 4;
   }
   return 5;
@@ -236,7 +256,15 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
         `${message.subject}: ${allSubject}   ${message.percentage}: ${percentage}`
       );
 
-      const markPercentage: number[] = allSubject === "Databáze" ? [88, 76, 64, 51] : [83, 67, 50, 33];
+      let markPercentage: number[];
+
+      if (allSubject === "Databáze") {
+        markPercentage = [88, 76, 64, 51, 1];
+      } else if (allSubject === "Matematika") {
+        markPercentage = [85, 67, 49, 33, 0];
+      } else {
+        markPercentage = [83, 67, 50, 33, 1];
+      }
 
       textBelowSubject[y].outerHTML = `<h2 title="${
         message.percentage
