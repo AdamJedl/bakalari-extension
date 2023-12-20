@@ -5,8 +5,8 @@ const srcDir = path.join(__dirname, "..", "src");
 
 module.exports = {
     entry: {
-      content_script: path.join(srcDir, 'content-script.ts'),
-      content_script_2: path.join(srcDir, 'content-script-2.ts'),
+        content_script: path.join(srcDir, 'content-script.ts'),
+        content_script_2: path.join(srcDir, 'content-script-2.ts'),
     },
     output: {
         path: path.join(__dirname, "../dist-firefox/js"),
@@ -16,7 +16,7 @@ module.exports = {
         splitChunks: {
             name: "vendor",
             chunks(chunk) {
-              return chunk.name !== 'background';
+                return chunk.name !== 'background';
             }
         },
     },

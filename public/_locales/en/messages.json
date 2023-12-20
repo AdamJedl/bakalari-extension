@@ -1,8 +1,8 @@
 {
-   "extension_description": {
-      "message": "Average by subject, average overall, predictor, wide mode, big marks, stipendium..."
-   },
-   "extension_name": {
-      "message": "Bakalari - Average, predictor..."
-   }
+    "extension_description": {
+        "message": "Average by subject, average overall, predictor, wide mode, big marks, stipendium..."
+    },
+    "extension_name": {
+        "message": "Bakalari - Average, predictor..."
+    }
 }

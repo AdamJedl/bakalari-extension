@@ -16,28 +16,28 @@ let url = window.location.href
 
 if (url.includes("prubzna.aspx")) {
 
-  GM_addStyle (`
+    GM_addStyle (`
 
-    //content.css
+        //content.css
 
-  `);
+    `);
 
-  
-  let language2;
-  const html = document.querySelector('html')
-  if (html && html.lang !== "") {
-      language2 = html.lang
-  } else {
-      language2 = navigator.language
-  }
 
-  if (language2 !== "cs") {
-    language2 = "en"
-  }
+    let language2;
+    const html = document.querySelector('html')
+    if (html && html.lang !== "") {
+        language2 = html.lang
+    } else {
+        language2 = navigator.language
+    }
 
-  //content_script.js
+    if (language2 !== "cs") {
+        language2 = "en"
+    }
+
+    //content_script.js
 }
 else {
 
-  //content_script_2.js
+    //content_script_2.js
 }
