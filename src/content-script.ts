@@ -272,6 +272,7 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
         markPercentage = [83, 67, 50, 33, 1];
       }
 
+      // eslint-disable-next-line no-unsanitized/property
       textBelowSubject[y].outerHTML = `<h2 title="${
         message.percentage
       }: ${percentage}% (${convertPercentageToAverage(
@@ -296,6 +297,7 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
 
       console.log(`${message.subject}: ${allSubject}   ${message.average}: ${average}`);
 
+      // eslint-disable-next-line no-unsanitized/property
       textBelowSubject[y].outerHTML = `<h2 title="${
         message.average
       }: ${average}" class="ext-h2">${message.average}: ${(
@@ -347,6 +349,7 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
 
   headerOverallAverage.setAttribute("style", "padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;");
 
+  // eslint-disable-next-line no-unsanitized/property
   headerOverallAverage.innerHTML = headerInnerHTML(
     overallAverageLeftRounded.toString(),
     subjectMark.length > 0 &&
@@ -370,6 +373,7 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
 
   headerStipendium.setAttribute("style", "padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;");
 
+  // eslint-disable-next-line no-unsanitized/property
   headerStipendium.innerHTML = headerInnerHTML(
     `${stipendium(overallAverageLeftRounded, "left")},-`,
     subjectMark.length > 0 && !isNanStrict(overallAverageRightRounded.toString()) ? `${stipendium(overallAverageRightRounded, "right")},-` : "",
@@ -800,7 +804,7 @@ function hugeMarksButton() {
       if (element.parentNode!.querySelector("div.bod")!.innerHTML === "") {
         element.style.cssText += "height: 42px;";
         if (marksDivDodatekSpan[index] !== undefined) {
-          marksDivDodatekSpan[index].style.cssText +=  "height: 20px; padding-top: 10px; font-size: 25px;";
+          marksDivDodatekSpan[index].style.cssText += "height: 20px; padding-top: 10px; font-size: 25px;";
         }
       }
     }
