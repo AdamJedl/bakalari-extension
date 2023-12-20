@@ -3,15 +3,25 @@
     "version": "1.1.2",
     "description": "Average by subject, average overall, predictor, wide mode, big marks, stipendium...",
     "scripts": {
-        "watch": "webpack --config webpack/webpack.dev.js --watch",
-        "watch-firefox": "webpack --config webpack-firefox/webpack.dev.js --watch",
-        "build": "webpack --config webpack/webpack.prod.js",
-        "build-firefox": "webpack --config webpack-firefox/webpack.prod.js",
-        "build-all": "webpack --config webpack/webpack.prod.js && mkdir -p dist-firefox && cp -r dist/* dist-firefox && cp manifest-firefox/manifest.json dist-firefox && python userscript-build.py",
+        "watch": "webpack --config webpack/webpack.js --env=mode=development --env=browser=chrome --watch",
+        "watch-firefox": "webpack --config webpack/webpack.js --env=mode=development --env=browser=firefox --watch",
+        
+        "build": "webpack --config webpack/webpack.js --env=mode=production --env=browser=chrome",
+        "build-dev": "webpack --config webpack/webpack.js --env=mode=development --env=browser=chrome",
+        
+        "build-firefox": "webpack --config webpack/webpack.js --env=mode=production --env=browser=firefox",
+        "build-firefox-dev": "webpack --config webpack/webpack.js --env=mode=development --env=browser=firefox",
+        
+        "build-all": "webpack --config webpack/webpack.js --env=mode=production --env=browser=chrome --env=all && cp -r dist/_locales dist/js dist/content.css dist-firefox && python userscript-build.py",
+        "build-all-dev": "webpack --config webpack/webpack.js --env=mode=development --env=browser=chrome --env=all && cp -r dist/_locales dist/js dist/content.css dist-firefox && python userscript-build.py",
+        
         "style": "prettier --write \"src/**/*.{ts,tsx}\"",
+        "style-json": "prettier --write \"{.prettierrc, package.json, package-lock.json, tsconfig.json}\"",
+        "style-webpack": "prettier --write \"webpack/*.js\"",
+        
         "lint": "eslint . --ext .ts",
         "lint-fix": "eslint --fix . --ext .ts",
-        "clean": "rm -rf dist && rm -rf dist-firefox && rm -rf dist-userscript"
+        "clean": "rm -rf dist dist-firefox dist-userscript"
     },
     "author": "AdamJedl",
     "license": "GPL-3.0",
@@ -19,20 +29,16 @@
         "@types/chrome": "^0.0.237",
         "@typescript-eslint/eslint-plugin": "^5.39.0",
         "@typescript-eslint/parser": "^5.39.0",
-        "babel-minify": "^0.5.2",
         "copy-webpack-plugin": "^11.0.0",
+        "css-minimizer-webpack-plugin": "^5.0.0",
+        "esbuild-loader": "^3.0.1",
         "eslint": "^8.25.0",
         "eslint-config-hardcore": "^36.3.2",
-        "glob": "^10.2.7",
+        "json-minimizer-webpack-plugin": "^4.0.0",
+        "mini-css-extract-plugin": "^2.7.6",
         "prettier": "^2.7.1",
-        "ts-loader": "^9.4.1",
         "typescript": "^5.1.3",
         "webpack": "^5.74.0",
-        "webpack-cli": "^5.1.4",
-        "webpack-merge": "^5.8.0"
-    },
-    "dependencies": {
-        "terser": "^5.15.1",
-        "uglify-js": "^3.17.3"
+        "webpack-cli": "^5.1.4"
     }
 }
