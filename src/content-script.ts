@@ -295,7 +295,7 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
             textBelowSubject[y].outerHTML = `<h2 title="${
                 message.average
             }: ${average}" class="ext-h2">${message.average}: ${(
-                Math.round((average + Number.EPSILON) * 100_000) / 100_000
+                Math.round((average + Number.EPSILON) * 100) / 100
             ).toFixed(2)}</h2>`;
 
             if (!isNaN(average)) {
