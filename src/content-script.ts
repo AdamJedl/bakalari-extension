@@ -615,7 +615,7 @@ function wideModeButton() {
 
   if (isWideModeOn) {
     document
-      .querySelector("div#obsah._loadingContainer:nth-child(10) > div")!
+      .querySelector("div#obsah._loadingContainer > div")!
       .setAttribute("style", "max-width: 1000px");
 
     if (btWideModeSelector) {
@@ -624,7 +624,7 @@ function wideModeButton() {
 
   } else {
     document
-      .querySelector("div#obsah._loadingContainer:nth-child(10) > div")!
+      .querySelector("div#obsah._loadingContainer > div")!
       .setAttribute("style", "max-width: 10000px");
 
     if (btWideModeSelector) {
