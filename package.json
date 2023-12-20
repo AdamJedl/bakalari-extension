@@ -3,22 +3,22 @@
     "version": "1.1.2",
     "description": "Average by subject, average overall, predictor, wide mode, big marks, stipendium...",
     "scripts": {
-        "watch": "webpack --config webpack/webpack.js --env=mode=development --env=browser=chrome --watch",
-        "watch-firefox": "webpack --config webpack/webpack.js --env=mode=development --env=browser=firefox --watch",
-
-        "build": "webpack --config webpack/webpack.js --env=mode=production --env=browser=chrome",
-        "build-dev": "webpack --config webpack/webpack.js --env=mode=development --env=browser=chrome",
-
-        "build-firefox": "webpack --config webpack/webpack.js --env=mode=production --env=browser=firefox",
-        "build-firefox-dev": "webpack --config webpack/webpack.js --env=mode=development --env=browser=firefox",
-
-        "build-all": "webpack --config webpack/webpack.js --env=mode=production --env=browser=chrome --env=all && cp -r dist/_locales dist/js dist/content.css dist-firefox && python userscript-build.py",
-        "build-all-dev": "webpack --config webpack/webpack.js --env=mode=development --env=browser=chrome --env=all && cp -r dist/_locales dist/js dist/content.css dist-firefox && python userscript-build.py",
-
+        "watch": "webpack --config webpack/webpack.ts --env=mode=development --env=browser=chrome --watch",
+        "watch-firefox": "webpack --config webpack/webpack.ts --env=mode=development --env=browser=firefox --watch",
+        
+        "build": "webpack --config webpack/webpack.ts --env=mode=production --env=browser=chrome",
+        "build-dev": "webpack --config webpack/webpack.ts --env=mode=development --env=browser=chrome",
+        
+        "build-firefox": "webpack --config webpack/webpack.ts --env=mode=production --env=browser=firefox",
+        "build-firefox-dev": "webpack --config webpack/webpack.ts --env=mode=development --env=browser=firefox",
+        
+        "build-all": "webpack --config webpack/webpack.ts --env=mode=production --env=browser=chrome --env=all && cp -r dist/_locales dist/js dist/content.css dist-firefox && python userscript-build.py",
+        "build-all-dev": "webpack --config webpack/webpack.ts --env=mode=development --env=browser=chrome --env=all && cp -r dist/_locales dist/js dist/content.css dist-firefox && python userscript-build.py",
+        
         "style": "prettier --write \"src/**/*.{ts,tsx}\"",
         "style-json": "prettier --write \"{.prettierrc, package.json, package-lock.json, tsconfig.json}\"",
-        "style-webpack": "prettier --write \"webpack/*.js\"",
-
+        "style-webpack": "prettier --write \"webpack/*.ts\"",
+        
         "lint": "eslint . --ext .ts",
         "lint-fix": "eslint --fix . --ext .ts",
         "clean": "rm -rf dist dist-firefox dist-userscript"
@@ -27,16 +27,19 @@
     "license": "GPL-3.0",
     "devDependencies": {
         "@types/chrome": "^0.0.254",
-        "@typescript-eslint/eslint-plugin": "^6.14.0",
-        "@typescript-eslint/parser": "^6.14.0",
+        "@types/node": "^20.10.5",
+        "@types/webpack": "^5.28.5",
+        "@typescript-eslint/eslint-plugin": "^6.15.0",
+        "@typescript-eslint/parser": "^6.15.0",
         "copy-webpack-plugin": "^11.0.0",
         "css-minimizer-webpack-plugin": "^5.0.1",
         "esbuild-loader": "^4.0.2",
-        "eslint": "^8.55.0",
+        "eslint": "^8.56.0",
         "eslint-config-hardcore": "^45.1.1",
         "json-minimizer-webpack-plugin": "^4.0.0",
         "mini-css-extract-plugin": "^2.7.6",
         "prettier": "^3.1.1",
+        "ts-node": "^10.9.2",
         "typescript": "^5.3.3",
         "webpack": "^5.89.0",
         "webpack-cli": "^5.1.4"
