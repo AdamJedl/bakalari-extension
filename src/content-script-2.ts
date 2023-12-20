@@ -47,9 +47,13 @@ const observer2 = new MutationObserver((_, obs) => {
                 document.querySelectorAll("#cphmain_divZnamky > table > tbody > tr").length;
                 index2++
             ) {
-                const idk2: HTMLElement | null = document.querySelector<HTMLElement>(
-                    `#cphmain_divZnamky > table > tbody > tr:nth-child(${index2}) > td:nth-child(${index}) > span`
-                );
+                const idk2: HTMLElement | null =
+                    document.querySelector<HTMLElement>(
+                        `#cphmain_divZnamky > table > tbody > tr:nth-child(${index2}) > td:nth-child(${index}) > span`
+                    ) ??
+                    document.querySelector<HTMLElement>(
+                        `#cphmain_divZnamky > table > tbody > tr:nth-child(${index2}) > td:nth-child(${index})`
+                    );
 
                 if (!idk2) {
                     continue;
@@ -57,9 +61,9 @@ const observer2 = new MutationObserver((_, obs) => {
 
                 idk2.style.fontSize = "17px";
 
-                if (idk2.innerHTML.trim() !== "-") {
+                if (idk2.textContent!.trim() !== "-") {
                     count++;
-                    sum += Number.parseInt(idk2.innerHTML, 10);
+                    sum += Number.parseInt(idk2.textContent!, 10);
                 }
             }
 
