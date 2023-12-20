@@ -138,7 +138,6 @@ function getpredmetRadekFromIndex(index: number) {
 
     const temporary = cphmain[index];
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (temporary === undefined) {
         throw new Error(`predmetRadek with index ${index} doesn't exist`);
     }
@@ -229,9 +228,9 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
 
     let sumLeft = 0;
 
-    const textBelowSubject = addedMarkOn
-        ? document.querySelectorAll("div.info-text > h2:nth-child(1)")
-        : document.querySelectorAll("div.info-text > span.fl:nth-child(1)");
+    const textBelowSubject = document.querySelectorAll(
+        `div.info-text > ${addedMarkOn ? "h2:nth-child(1)" : "span.fl:nth-child(1)"}`
+    );
 
     let numberOfValidTextsBelowSubject = 0;
 
@@ -240,23 +239,24 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
         let quantity = 0;
 
         for (const [index, element] of subjectArray.entries()) {
-            if (element === allSubject) {
-                if (isSubjectWithPoints(element)) {
-                    sum += Number(convertMarkToNumber(markArray[index]!).split("/")[0]!) * Number(convertMarkToNumber(weightArray[index]!));
-                    quantity += Number(convertMarkToNumber(markArray[index]!).split("/")[1]!) * Number(convertMarkToNumber(weightArray[index]!));
+            if (element !== allSubject) {
+                continue;
+            }
 
-                } else {
-                    sum += Number(convertMarkToNumber(markArray[index]!)) * Number(convertMarkToNumber(weightArray[index]!));
-                    quantity += Number(convertMarkToNumber(weightArray[index]!));
-                }
+            if (isSubjectWithPoints(element)) {
+                sum += Number(convertMarkToNumber(markArray[index]!).split("/")[0]!) * Number(convertMarkToNumber(weightArray[index]!));
+                quantity += Number(convertMarkToNumber(markArray[index]!).split("/")[1]!) * Number(convertMarkToNumber(weightArray[index]!));
 
+            } else {
+                sum += Number(convertMarkToNumber(markArray[index]!)) * Number(convertMarkToNumber(weightArray[index]!));
+                quantity += Number(convertMarkToNumber(weightArray[index]!));
             }
         }
 
         if (isSubjectWithPoints(allSubject)) {
             const percentage = (sum / quantity) * 100;
 
-            console.log(`${message.subject}: ${allSubject}   ${message.percentage}: ${percentage}`);
+            console.log(`${message.subject!}: ${allSubject}   ${message.percentage!}: ${percentage}`);
 
             let markPercentage: number[];
 
@@ -270,14 +270,14 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
 
             // eslint-disable-next-line no-unsanitized/property
             textBelowSubject[y]!.outerHTML = `<h2 title="${
-                message.percentage
+                message.percentage!
             }: ${percentage}% (${convertPercentageToAverage(
                 percentage, markPercentage
-            )})" class="ext-h2">${message.percentage}: ${(
+            )})" class="ext-h2">${message.percentage!}: ${(
                 Math.round((percentage + Number.EPSILON) * 100_000) / 100_000
             ).toFixed(2)}% (${convertPercentageToAverage(percentage, markPercentage)})</h2>`;
 
-            if (!isNaN(percentage)) {
+            if (!Number.isNaN(percentage)) {
                 numberOfValidTextsBelowSubject++;
 
                 const sumLeftTemporary = convertPercentageToAverage(percentage, markPercentage);
@@ -291,16 +291,16 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
         } else {
             const average = sum / quantity;
 
-            console.log(`${message.subject}: ${allSubject}   ${message.average}: ${average}`);
+            console.log(`${message.subject!}: ${allSubject}   ${message.average!}: ${average}`);
 
             // eslint-disable-next-line no-unsanitized/property
             textBelowSubject[y]!.outerHTML = `<h2 title="${
-                message.average
-            }: ${average}" class="ext-h2">${message.average}: ${(
+                message.average!
+            }: ${average}" class="ext-h2">${message.average!}: ${(
                 Math.round((average + Number.EPSILON) * 100) / 100
             ).toFixed(2)}</h2>`;
 
-            if (!isNaN(average)) {
+            if (!Number.isNaN(average)) {
                 sumLeft += Math.round(average);
                 if (Math.round(average) >= 4) {
                     isSubjectMarkWorseThan3Left = true;
@@ -353,8 +353,8 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
             !isNanStrict(overallAverageRightRounded.toString())
             ? overallAverageRightRounded.toString()
             : "",
-        `${message.overallAverage}: ${overallAverageLeft}`,
-        `${message.overallAverage}: ${overallAverageRight}`
+        `${message.overallAverage!}: ${overallAverageLeft}`,
+        `${message.overallAverage!}: ${overallAverageRight}`
     );
 
     let headerStipendium;
@@ -418,7 +418,7 @@ function removeMark(addedMark: Element) {
 
             subjectTemporary = splitArray.nazev;
             subjectIndex = allSubjects.indexOf(subjectTemporary);
-            
+
             markTemporary = isSubjectWithPoints(subjectTemporary)
                 ? `${splitArray.MarkText}/${splitArray.bodymax}`
                 : splitArray.MarkText;
@@ -464,7 +464,7 @@ function removeMark(addedMark: Element) {
         }
 
         if (!isMarkFound) {
-            throw new Error(`mark to remove not found:\nsubjectTemporary: ${subjectTemporary}\nmarkTemporary: ${markTemporary}\nweightTemporary: ${weightTemporary}\nsubjectArray: ${subjectArray}\nmarkArray: ${markArray}\nweightArray: ${weightArray}`);
+            throw new Error(`mark to remove not found:\nsubjectTemporary: ${subjectTemporary}\nmarkTemporary: ${markTemporary}\nweightTemporary: ${weightTemporary}\nsubjectArray: ${subjectArray.toString()}\nmarkArray: ${markArray.toString()}\nweightArray: ${weightArray.toString()}`);
         }
 
         fixAbxNext(subjectIndex);
@@ -537,6 +537,7 @@ function addMarkButton() {
           ? 'style="height: 20px; padding-top: 10px; font-size: 25px;"'
           : "";
 
+    // eslint-disable-next-line no-unsanitized/property
     document.querySelector(
         "#addedMark"
     )!.outerHTML = `<div class="znamka-v tooltip-bubble addedMark" style="float: left; list-style: none; position: relative; width: 56px; background-color: #ffa50069;" id="addedMark">
@@ -559,11 +560,8 @@ function addMarkButton() {
 
     document.querySelector("#addedMark")!.id = "";
 
-
-    if (
-        divPredmetRadekSelector!.parentElement!.parentElement!.parentElement!.classList.contains("hide-bx-wrapper")
-    ) {
-        divPredmetRadekSelector!.parentElement!.parentElement!.parentElement!.classList.remove("hide-bx-wrapper");
+    if (predmetRadek!.classList.contains("hide-bx-wrapper")) {
+        predmetRadek!.classList.remove("hide-bx-wrapper");
         window.dispatchEvent(new Event("resize"));
     }
 
@@ -580,6 +578,7 @@ function fixAllAbxNext() {
     for (let index = 0; index < divZnamkySelector.length; index++) {
         fixAbxNext(index);
 
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (isResizeNeeded) {
             return;
         }
@@ -1106,174 +1105,177 @@ function createPredictorMenu() {
 
 
 const observer = new MutationObserver((_, obs) => {
-    const divWait = document.querySelector("div#obsah._loadingContainer:nth-child(10) > div > main > div");
 
-    if (divWait) {
-        document.querySelector<HTMLElement>("#predmety")!.style.paddingBottom = "20px";
-
-        const allMarks = document.querySelectorAll<HTMLElement>("div.znamka-v.tooltip-bubble");
-
-        for (const allMark of allMarks) {
-            if (!allMark.classList.contains("addedMark")) {
-                allMark.addEventListener(
-                    "click",
-                    function () {removeMark(this);},
-                    false
-                );
-            }
-        }
-
-        document.querySelector("div.bk-menu-hide")?.addEventListener(
-            "click",
-            function () {
-                if (document.querySelector("div.bk-menu-hide")!.clientWidth < 150) {
-                    fixAllAbxNext();
-                } else {
-                    setTimeout(() => {
-                        fixAllAbxNext();
-                    }, 300);
-                }
-            },
-            false
-        );
-
-        if (document.querySelectorAll<HTMLElement>("div.znamka-v > div.dodatek").length !== document.querySelectorAll<HTMLElement>("div.znamka-v > div.dodatek > span.w-100").length) {
-            for (const element of allMarks) {
-                if (element.querySelector(".dodatek > span.w-100") === null) {
-                    const splitArray = element.getAttribute("data-clasif")!.split('vaha":');
-                    const splitArray2 = splitArray[3]!.split('MarkText":"');
-
-                    const markWeight = document.createElement("span");
-                    markWeight.className = "w-100 d-inline-block";
-                    markWeight.textContent = splitArray2[0]!.split(",")[0]!;
-                    element.querySelector(".dodatek")!.prepend(markWeight);
-                }
-            }
-        }
-
-        const allSubjectNamesSelector = document.querySelectorAll(
-            "div.leva:nth-child(1) > div.obal._subject_detail.link:nth-child(1) > h3:nth-child(1)"
-        );
-
-        allSubjects.push(...Array.from(allSubjectNamesSelector, element => element.textContent!));
-
-        const pointsOfFirstMarkInAllSubjects: NodeListOf<Element> = document.querySelectorAll(
-            "div.znamky > div.znamka-v.tooltip-bubble:nth-child(1) > div.bod"
-        );
-
-
-        if (allMarks.length === pointsOfFirstMarkInAllSubjects.length) {
-            for (const [
-                index,
-                pointsOfFirstMarkInAllSubject,
-            ] of pointsOfFirstMarkInAllSubjects.entries()) {
-                if (pointsOfFirstMarkInAllSubject.innerHTML !== "") {
-                    subjectsWithPoints.push(allSubjects[index]!);
-                }
-            }
-        }
-        else {
-            for (
-                const pointsOfFirstMarkInAllSubject
-            of pointsOfFirstMarkInAllSubjects) {
-                if (pointsOfFirstMarkInAllSubject.innerHTML !== "") {
-                  
-                    const predmetRadek = getParentPredmetRadek(pointsOfFirstMarkInAllSubject);
-                    const PredmetRadekChildrens = predmetRadek.parentElement!.querySelectorAll("div.predmet-radek:is([id])");
-
-                    subjectsWithPoints.push(allSubjects[Array.from(PredmetRadekChildrens).indexOf(predmetRadek)]!);
-                }
-            }
-        }
-
-        isWideModeOn = !isWideModeOn;
-
-        wideModeButton();
-
-        const viewportSelector = document.querySelectorAll("div.bx-wrapper > div.bx-viewport");
-
-        for (const element of viewportSelector) {
-            element.setAttribute("style", "height: 79px");
-        }
-
-        if (areHugeMarksOn) {
-            areHugeMarksOn = !areHugeMarksOn;
-
-            hugeMarksButton();
-        }
-
-        if (isHideWeightFromPointsOn) {
-            isHideWeightFromPointsOn = !isHideWeightFromPointsOn;
-
-            hideWeightFromMarksWithPoints();
-        }
-
-        if (isReplaceWeightXWith10On) {
-            isReplaceWeightXWith10On = !isReplaceWeightXWith10On;
-
-            replaceWeightXWith10();
-        }
-
-        const allMarksSelector = document.querySelectorAll<HTMLElement>(
-            "div.znamka-v.tooltip-bubble"
-        );
-
-        for (const element of allMarksSelector) {
-            const splitArray: unknown = JSON.parse(element.getAttribute("data-clasif")!);
-
-            const splitArrayMark: string = splitArray.MarkText;
-
-            if (!isNanStrict(convertMarkToNumber(splitArray.MarkText))) {
-                const splitArraySubject: string = splitArray.nazev;
-                const splitArrayWeight: number = splitArray.vaha;
-
-                if (isSubjectWithPoints(splitArraySubject)) {
-                    
-                    const splitArrayMaxPoints: number = splitArray.bodymax;
-                    markArray.push(`${splitArrayMark}/${splitArrayMaxPoints}`);
-
-                    console.debug(
-                        `subject: ${splitArraySubject} mark: ${splitArrayMark}/${splitArrayMaxPoints} weight: ${splitArrayWeight}`
-                    );
-                } else {
-                    markArray.push(splitArrayMark);
-
-                    console.debug(
-                        `subject: ${splitArraySubject} mark: ${splitArrayMark} weight: ${splitArrayWeight}`
-                    );
-                }
-
-                subjectArray.push(splitArraySubject);
-                weightArray.push(splitArrayWeight.toString());
-            }
-        }
-
-        refreshOrCreateAverage(false);
-
-        const h2Above = document.querySelector("header.bk-prubzna:nth-child(1) > h2:nth-child(1)");
-
-        createBt(isSettingsOn, message.settings!, "btSettings", settingsMenu, h2Above);
-
-        createBt(isPredictorOn, message.predictor!, "btPredictor", predictorMenu, h2Above);
-
-        createSettingsMenu();
-
-        createPredictorMenu();
-
-        obs.disconnect();
-      
-    } else {
-
+    if (!document.querySelector("div#obsah._loadingContainer:nth-child(10) > div > main > div")) {
+        
         if (numberOfTries === 200) {
             console.log(`"div#obsah._loadingContainer:nth-child(10) > div > main > div" is null`);
             obs.disconnect();
         }
-
+    
         numberOfTries++;
+
+        return;
     }
+
+
+    document.querySelector<HTMLElement>("#predmety")!.style.paddingBottom = "20px";
+
+    const allMarks = document.querySelectorAll<HTMLElement>("div.znamka-v.tooltip-bubble");
+
+    for (const allMark of allMarks) {
+        if (!allMark.classList.contains("addedMark")) {
+            allMark.addEventListener(
+                "click",
+                function () {removeMark(this);},
+                false
+            );
+        }
+    }
+
+    document.querySelector("div.bk-menu-hide")?.addEventListener(
+        "click",
+        function () {
+            if (document.querySelector("div.bk-menu-hide")!.clientWidth < 150) {
+                fixAllAbxNext();
+            } else {
+                setTimeout(() => {
+                    fixAllAbxNext();
+                }, 300);
+            }
+        },
+        false
+    );
+
+    if (document.querySelectorAll<HTMLElement>("div.znamka-v > div.dodatek").length !== document.querySelectorAll<HTMLElement>("div.znamka-v > div.dodatek > span.w-100").length) {
+        for (const element of allMarks) {
+            if (element.querySelector(".dodatek > span.w-100") === null) {
+                const splitArray = element.getAttribute("data-clasif")!.split('vaha":');
+                const splitArray2 = splitArray[3]!.split('MarkText":"');
+
+                const markWeight = document.createElement("span");
+                markWeight.className = "w-100 d-inline-block";
+                markWeight.textContent = splitArray2[0]!.split(",")[0]!;
+                element.querySelector(".dodatek")!.prepend(markWeight);
+            }
+        }
+    }
+
+    const allSubjectNamesSelector = document.querySelectorAll(
+        "div.leva:nth-child(1) > div.obal._subject_detail.link:nth-child(1) > h3:nth-child(1)"
+    );
+
+    allSubjects.push(...Array.from(allSubjectNamesSelector, element => element.textContent!));
+
+    const pointsOfFirstMarkInAllSubjects: NodeListOf<Element> = document.querySelectorAll(
+        "div.znamky > div.znamka-v.tooltip-bubble:nth-child(1) > div.bod"
+    );
+
+
+    if (allMarks.length === pointsOfFirstMarkInAllSubjects.length) {
+        for (const [
+            index,
+            pointsOfFirstMarkInAllSubject,
+        ] of pointsOfFirstMarkInAllSubjects.entries()) {
+            if (pointsOfFirstMarkInAllSubject.innerHTML !== "") {
+                subjectsWithPoints.push(allSubjects[index]!);
+            }
+        }
+    }
+    else {
+        for (
+            const pointsOfFirstMarkInAllSubject
+        of pointsOfFirstMarkInAllSubjects) {
+            if (pointsOfFirstMarkInAllSubject.innerHTML !== "") {
+                
+                const predmetRadek = getParentPredmetRadek(pointsOfFirstMarkInAllSubject);
+                const PredmetRadekChildrens = predmetRadek.parentElement!.querySelectorAll("div.predmet-radek:is([id])");
+
+                subjectsWithPoints.push(allSubjects[Array.from(PredmetRadekChildrens).indexOf(predmetRadek)]!);
+            }
+        }
+    }
+
+    isWideModeOn = !isWideModeOn;
+
+    wideModeButton();
+
+    const viewportSelector = document.querySelectorAll("div.bx-wrapper > div.bx-viewport");
+
+    for (const element of viewportSelector) {
+        element.setAttribute("style", "height: 79px");
+    }
+
+    if (areHugeMarksOn) {
+        areHugeMarksOn = false;
+
+        hugeMarksButton();
+    }
+
+    if (isHideWeightFromPointsOn) {
+        isHideWeightFromPointsOn = false;
+
+        hideWeightFromMarksWithPoints();
+    }
+
+    if (isReplaceWeightXWith10On) {
+        isReplaceWeightXWith10On = false;
+
+        replaceWeightXWith10();
+    }
+
+    const allMarksSelector = document.querySelectorAll<HTMLElement>(
+        "div.znamka-v.tooltip-bubble"
+    );
+
+    for (const element of allMarksSelector) {
+        const splitArray: unknown = JSON.parse(element.getAttribute("data-clasif")!);
+
+        const splitArrayMark: string = splitArray.MarkText;
+
+        if (!isNanStrict(convertMarkToNumber(splitArray.MarkText))) {
+            const splitArraySubject: string = splitArray.nazev;
+            const splitArrayWeight: number = splitArray.vaha;
+
+            if (isSubjectWithPoints(splitArraySubject)) {
+                
+                const splitArrayMaxPoints: number = splitArray.bodymax;
+                markArray.push(`${splitArrayMark}/${splitArrayMaxPoints}`);
+
+                console.debug(
+                    `subject: ${splitArraySubject} mark: ${splitArrayMark}/${splitArrayMaxPoints} weight: ${splitArrayWeight}`
+                );
+            } else {
+                markArray.push(splitArrayMark);
+
+                console.debug(
+                    `subject: ${splitArraySubject} mark: ${splitArrayMark} weight: ${splitArrayWeight}`
+                );
+            }
+
+            subjectArray.push(splitArraySubject);
+            weightArray.push(splitArrayWeight.toString());
+        }
+    }
+
+    refreshOrCreateAverage(false);
+
+    const h2Above = document.querySelector("header.bk-prubzna:nth-child(1) > h2:nth-child(1)");
+
+    createBt(isSettingsOn, message.settings!, "btSettings", settingsMenu, h2Above);
+
+    createBt(isPredictorOn, message.predictor!, "btPredictor", predictorMenu, h2Above);
+
+    createSettingsMenu();
+
+    createPredictorMenu();
+
+    obs.disconnect();
 });
 
 observer.observe(document, {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     childList: true,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     subtree: true
 });
