@@ -36,8 +36,8 @@ if (language === "cs") {
     message.removeMark = "Opravdu chcete odstranit známku? ";
     message.overallAverage = "Celkový průměr";
     message.subject = "Předmět";
-    message.replaceWeightXWith10 = "Nahradit váhu X na 10";
-    message.clickOnBtReplaceWeightXWith10 = "Změna se projeví po znovu načtení stránky.";
+    message.replaceTypeWithWeight = "Nahradit typ za váhu";
+    message.clickOnBtReplaceTypeWithWeight = "Změna se projeví po znovu načtení stránky.";
 } else {
     message.settings = "Settings";
     message.predictor = "Predictor";
@@ -60,8 +60,8 @@ if (language === "cs") {
     message.removeMark = "Are you sure you want to remove a mark?";
     message.overallAverage = "Overall average";
     message.subject = "Subject";
-    message.replaceWeightXWith10 = "Replace weight X with 10";
-    message.clickOnBtReplaceWeightXWith10 = "Change will take effect after the page is refreshed.";
+    message.replaceTypeWithWeight = "Replace type with weight";
+    message.clickOnBtReplaceTypeWithWeight = "Change will take effect after the page is refreshed.";
 }
 
 let isResizeNeeded = false;
@@ -78,7 +78,7 @@ let isHideWeightFromPointsOn = localStorage.getItem("hideWeightFromPointsOn") ==
 let isPredictorOn = localStorage.getItem("predictorOn") === "true";
 let isRemoveMarksOn = localStorage.getItem("removeMarkOn") === "true";
 let isInstaRemoveMarksOn = localStorage.getItem("instaRemoveMarksOn") === "true";
-let isReplaceWeightXWith10On = localStorage.getItem("replaceWeightXWith10On") === "true";
+let isReplaceTypeWithWeightOn = localStorage.getItem("replaceTypeWithWeightOn") === "true";
 
 const subjectArray: string[] = [];
 const markArray: string[] = [];
@@ -944,36 +944,36 @@ function changeLanguage(bt: HTMLInputElement) {
     }
 }
 
-function replaceWeightXWith10() {
-    if (isReplaceWeightXWith10On) {
-        alert(message.clickOnBtReplaceWeightXWith10);
+function replaceTypeWithWeight() {
+    if (isReplaceTypeWithWeightOn) {
+        alert(message.clickOnBtReplaceTypeWithWeight);
     } else {
         const allMarksWeight = document.querySelectorAll<HTMLElement>(
             "div.znamka-v.tooltip-bubble > div.dodatek > span.w-100"
         );
 
         for (const element of allMarksWeight) {
-            if (element.textContent === "X") {
-                element.textContent = "10";
-            }
+            element.textContent = JSON.parse(
+                element.parentElement!.parentElement!.getAttribute("data-clasif")!
+            ).vaha;
         }
     }
 
-    isReplaceWeightXWith10On = !isReplaceWeightXWith10On;
+    isReplaceTypeWithWeightOn = !isReplaceTypeWithWeightOn;
 
-    if (document.querySelector("#btReplaceWeightXWith10")) {
-        if (isReplaceWeightXWith10On) {
+    if (document.querySelector("#btReplaceTypeWithWeight")) {
+        if (isReplaceTypeWithWeightOn) {
             document
-                .querySelector("#btReplaceWeightXWith10")!
+                .querySelector("#btReplaceTypeWithWeight")!
                 .classList.remove("ext-disabled");
         } else {
             document
-                .querySelector("#btReplaceWeightXWith10")!
+                .querySelector("#btReplaceTypeWithWeight")!
                 .classList.add("ext-disabled");
         }
     }
 
-    localStorage.setItem("replaceWeightXWith10On", isReplaceWeightXWith10On.toString());
+    localStorage.setItem("replaceTypeWithWeightOn", isReplaceTypeWithWeightOn.toString());
 }
 
 function createSettingsMenu() {
@@ -1003,10 +1003,10 @@ function createSettingsMenu() {
         document.querySelector("#settingsMenuDiv")
     );
     createBt(
-        isReplaceWeightXWith10On,
-        message.replaceWeightXWith10!,
-        "btReplaceWeightXWith10",
-        replaceWeightXWith10,
+        isReplaceTypeWithWeightOn,
+        message.replaceTypeWithWeight!,
+        "btReplaceTypeWithWeight",
+        replaceTypeWithWeight,
         document.querySelector("#settingsMenuDiv")
     );
 
@@ -1218,10 +1218,10 @@ const observer = new MutationObserver((_, obs) => {
         hideWeightFromMarksWithPoints();
     }
 
-    if (isReplaceWeightXWith10On) {
-        isReplaceWeightXWith10On = false;
+    if (isReplaceTypeWithWeightOn) {
+        isReplaceTypeWithWeightOn = false;
 
-        replaceWeightXWith10();
+        replaceTypeWithWeight();
     }
 
     const allMarksSelector = document.querySelectorAll<HTMLElement>(
