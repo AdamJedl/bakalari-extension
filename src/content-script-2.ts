@@ -61,7 +61,7 @@ const observer2 = new MutationObserver((_, obs) => {
 
                 idk2.style.fontSize = "17px";
 
-                if (idk2.textContent!.trim() !== "-") {
+                if (!(Number.isNaN(Number(idk2.textContent!.trim())) || idk2.textContent!.trim().trim() === "")) {
                     count++;
                     sum += Number.parseInt(idk2.textContent!, 10);
                 }
