@@ -124,6 +124,15 @@ function isNanStrict(a: string) {
     return Number.isNaN(Number(a)) || a.trim() === "";
 }
 
+function convertMarkToNumber(mark: string ) {
+    const markTemporary: string = mark.replaceAll(/(?<!e)-/giv, ".5");
+    if (markTemporary.startsWith(".5") && markTemporary.length > 2) {
+        return `-${markTemporary.slice(2)}`;
+    }
+
+    return markTemporary;
+}
+
 function getpredmetRadekFromIndex(index: number) {
     const cphmain = document.querySelector("#cphmain_DivBySubject")!.querySelectorAll("div.predmet-radek:is([id])");
 
@@ -233,16 +242,14 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
         for (const [index, element] of subjectArray.entries()) {
             if (element === allSubject) {
                 if (isSubjectWithPoints(element)) {
-                    sum += Number.parseInt(markArray[index]!, 10);
+                    sum += Number(convertMarkToNumber(markArray[index]!).split("/")[0]!) * Number(convertMarkToNumber(weightArray[index]!));
+                    quantity += Number(convertMarkToNumber(markArray[index]!).split("/")[1]!) * Number(convertMarkToNumber(weightArray[index]!));
+
                 } else {
-                    sum +=
-                        markArray[index]![1] === "-"
-                            ? (Number.parseInt(markArray[index]![0]!, 10) + 0.5) *
-                              Number.parseInt(weightArray[index]!, 10)
-                            : Number(markArray[index]) * Number(weightArray[index]);
+                    sum += Number(convertMarkToNumber(markArray[index]!)) * Number(convertMarkToNumber(weightArray[index]!));
+                    quantity += Number(convertMarkToNumber(weightArray[index]!));
                 }
 
-                quantity += Number.parseInt(weightArray[index]!, 10);
             }
         }
 
@@ -398,42 +405,43 @@ function removeMark(addedMark: Element) {
             subjectIndex = Array.from(cphmain).indexOf(predmetRadek);
 
             subjectTemporary = allSubjects[subjectIndex]!;
-            markTemporary = addedMark.querySelector<HTMLElement>("div.ob")!.textContent!.trim();
-            weightTemporary = addedMark.querySelector<HTMLElement>(isSubjectWithPoints(subjectTemporary) ? "div.bod" : "span.w-100")!.textContent!;
+            markTemporary = isSubjectWithPoints(subjectTemporary)
+                ? `${addedMark
+                      .querySelector<HTMLElement>("div.ob")!
+                      .textContent!.trim()}/${addedMark
+                      .querySelector<HTMLElement>("div.bod")!
+                      .textContent!.trim()}`
+                : addedMark.querySelector<HTMLElement>("div.ob")!.textContent!.trim();
+            weightTemporary = addedMark.querySelector<HTMLElement>("span.w-100")!.textContent!;
         } else {
-            const splitArray: string[] = addedMark.getAttribute("data-clasif")!.split('vaha":');
+            const splitArray: unknown = JSON.parse(addedMark.getAttribute("data-clasif")!);
 
-            const splitArray2: string[] = splitArray[3]!.split('MarkText":"');
-
-            markTemporary = splitArray2[1]!.split('"')[0]!;
-            subjectTemporary = splitArray[2]!.split('"')[3]!;
-
+            subjectTemporary = splitArray.nazev;
             subjectIndex = allSubjects.indexOf(subjectTemporary);
+            
+            markTemporary = isSubjectWithPoints(subjectTemporary)
+                ? `${splitArray.MarkText}/${splitArray.bodymax}`
+                : splitArray.MarkText;
 
             if (subjectIndex === -1) {
                 throw new TypeError(`subject "${subjectTemporary}" is not in allSubjects\nallSubjects: ${allSubjects.toString()}`);
             }
 
-            if (
-                markTemporary === "A" ||
-                markTemporary === "N" ||
-                markTemporary === "?" ||
-                markTemporary === "X"
-            ) {
+            if (!Number(convertMarkToNumber(splitArray.MarkText))) {
                 addedMark.remove();
 
                 fixAbxNext(subjectIndex);
 
                 const allTooltipsSelector = document.querySelectorAll("div.ui-tooltip");
 
-                allTooltipsSelector.forEach(element => { element.remove() });
+                allTooltipsSelector.forEach((element) => {
+                    element.remove();
+                });
 
                 return;
             }
 
-            weightTemporary = isSubjectWithPoints(subjectTemporary)
-                ? splitArray[0]!.split('bodymax":')[1]!.split(',"')[0]!
-                : splitArray2[0]!.split(",")[0]!;
+            weightTemporary = splitArray.vaha.toString();
         }
 
         addedMark.remove();
@@ -479,33 +487,23 @@ function addMarkButton() {
 
     const markTemporary: string = document.querySelector<HTMLInputElement>("#inputMark")!.value;
 
+    const maxPointsTemporary: string = document.querySelector<HTMLInputElement>("#inputMaxPoints")!.value;
     const weightTemporary: string = document.querySelector<HTMLInputElement>("#inputWeight")!.value;
 
     let alertText = "";
 
     if (isSelectedSubjectProgramovani) {
-        if (isNanStrict(markTemporary) || Number.parseInt(markTemporary, 10) < 0) {
+        if (isNanStrict(convertMarkToNumber(markTemporary))) {
             alertText += message.pointsAreInvalid;
         }
-        if (isNanStrict(weightTemporary) || Number.parseInt(weightTemporary, 10) <= 0) {
+        if (isNanStrict(convertMarkToNumber(maxPointsTemporary))) {
             alertText += message.maxPointsAreInvalid;
         }
-    } else {
-        if (
-            isNaN(Number.parseInt(markTemporary, 10)) ||
-            Number(markTemporary) < 1 ||
-            Number(markTemporary) > 5 ||
-            markTemporary === "5-"
-        ) {
-            alertText += message.markIsInvalid;
-        }
-        if (
-            isNanStrict(weightTemporary) ||
-            Number(weightTemporary) < 1 ||
-            Number(weightTemporary) > 10
-        ) {
-            alertText += message.weightIsInvalid;
-        }
+    } else if (isNanStrict(convertMarkToNumber(markTemporary))) {
+        alertText += message.markIsInvalid;
+    }
+    if (isNanStrict(convertMarkToNumber(weightTemporary))) {
+        alertText += message.weightIsInvalid;
     }
 
     if (alertText.length > 0) {
@@ -515,11 +513,9 @@ function addMarkButton() {
     }
 
     subjectArray.push(subjectTemporary);
-
-    const hasMarkMinus = markTemporary.length > 1 && markTemporary[1] === "-";
-
-    markArray.push(markTemporary);
-
+    markArray.push(
+        isSelectedSubjectProgramovani ? `${markTemporary}/${maxPointsTemporary}` : markTemporary
+    );
     weightArray.push(weightTemporary);
 
     const cphmain = document.querySelector("#cphmain_DivBySubject")!.querySelectorAll("div.predmet-radek:is([id])");
@@ -533,15 +529,23 @@ function addMarkButton() {
     addedMarkCreate.id = "addedMark";
     divPredmetRadekSelector!.append(addedMarkCreate);
 
+    const spanStyle: string = isSelectedSubjectProgramovani
+        ? isHideWeightFromPointsOn
+            ? 'style="visibility: hidden;"'
+            : ""
+        : areHugeMarksOn
+          ? 'style="height: 20px; padding-top: 10px; font-size: 25px;"'
+          : "";
+
     document.querySelector(
         "#addedMark"
     )!.outerHTML = `<div class="znamka-v tooltip-bubble addedMark" style="float: left; list-style: none; position: relative; width: 56px; background-color: #ffa50069;" id="addedMark">
                         <div class="cislovka  obrovsky" id="obrovsky">
-                            <div class="ob">${hasMarkMinus ? markTemporary : Number.parseInt(markTemporary, 10)}</div>
+                            <div class="ob">${markTemporary}</div>
                         </div>
-                        <div class="bod" ${isSelectedSubjectProgramovani && areHugeMarksOn && isHideWeightFromPointsOn ? 'style="height: 30px; margin-top: -15px; font-size: 25px; line-height: 30px;"' : isSelectedSubjectProgramovani && isHideWeightFromPointsOn ? 'style="height: 30px; margin-top: -15px; font-size: 9px; line-height: 50px;"' : ""}>${isSelectedSubjectProgramovani ? weightTemporary : ""}</div>
-                        <div class="dodatek" ${areHugeMarksOn ? 'style="height: 42px;"' : ""}>
-                            <span class="w-100 d-inline-block" ${isSelectedSubjectProgramovani ? 'style="visibility: hidden;"' : areHugeMarksOn ? 'style="height: 20px; padding-top: 10px; font-size: 25px;"' : ""}>${isSelectedSubjectProgramovani ? "" : weightTemporary}</span>
+                        <div class="bod" ${isSelectedSubjectProgramovani && areHugeMarksOn && isHideWeightFromPointsOn ? 'style="height: 30px; margin-top: -15px; font-size: 25px; line-height: 30px;"' : isSelectedSubjectProgramovani && isHideWeightFromPointsOn ? 'style="height: 30px; margin-top: -15px; font-size: 9px; line-height: 50px;"' : ""}>${isSelectedSubjectProgramovani ? maxPointsTemporary : ""}</div>
+                        <div class="dodatek" ${areHugeMarksOn && !isSelectedSubjectProgramovani ? 'style="height: 42px;"' : ""}>
+                            <span class="w-100 d-inline-block" ${spanStyle}>${weightTemporary}</span>
                         </div>
                     </div>`;
 
@@ -904,19 +908,19 @@ function ifSelectedSubjectHavePoints() {
     const subjectTemporary = select.options[select.selectedIndex]!.text;
 
     const inputMarkSelector = document.querySelector<HTMLInputElement>("#inputMark")!;
+    const inputMaxPointsSelector = document.querySelector<HTMLInputElement>("#inputMaxPoints")!;
     const inputWeightSelector = document.querySelector<HTMLInputElement>("#inputWeight")!;
 
     const bool = isSubjectWithPoints(subjectTemporary);
 
-    inputMarkSelector.maxLength = bool ? 3 : 2;
     inputMarkSelector.placeholder = bool
         ? message.inputMarkPlaceholderPoints!
         : message.inputMarkPlaceholder!;
 
-    inputWeightSelector.maxLength = bool ? 3 : 2;
-    inputWeightSelector.placeholder = bool
-        ? message.inputWeightPlaceholderPoints!
-        : message.inputWeightPlaceholder!;
+    inputMaxPointsSelector.placeholder = message.inputWeightPlaceholderPoints!;
+    inputMaxPointsSelector.style.display = bool ? "" : "none";
+
+    inputWeightSelector.placeholder = message.inputWeightPlaceholder!;
 
     isSelectedSubjectProgramovani = bool;
 }
@@ -1069,6 +1073,13 @@ function createPredictorMenu() {
 
     createElement(
         "input",
+        "inputMaxPoints",
+        document.querySelector("#predictorMenuDiv"),
+        "width: 60px;"
+    );
+
+    createElement(
+        "input",
         "inputWeight",
         document.querySelector("#predictorMenuDiv"),
         "width: 60px;"
@@ -1208,34 +1219,24 @@ const observer = new MutationObserver((_, obs) => {
         );
 
         for (const element of allMarksSelector) {
-            const splitArray = element.getAttribute("data-clasif")!.split('vaha":');
+            const splitArray: unknown = JSON.parse(element.getAttribute("data-clasif")!);
 
-            const splitArray2 = splitArray[3]!.split('MarkText":"');
+            const splitArrayMark: string = splitArray.MarkText;
 
-            const splitArrayMark = splitArray2[1]!.split('"')[0]!;
-
-            if (
-                !(
-                    splitArrayMark === "A" ||
-                    splitArrayMark === "N" ||
-                    splitArrayMark === "?" ||
-                    splitArrayMark === "X"
-                )
-            ) {
-                const splitArraySubject = splitArray[2]!.split('"')[3]!;
+            if (!isNanStrict(convertMarkToNumber(splitArray.MarkText))) {
+                const splitArraySubject: string = splitArray.nazev;
+                const splitArrayWeight: number = splitArray.vaha;
 
                 if (isSubjectWithPoints(splitArraySubject)) {
-                    const splitArrayWeight = splitArray[0]!.split('bodymax":')[1]!.split(',"')[0]!;
-
-                    weightArray.push(splitArrayWeight);
+                    
+                    const splitArrayMaxPoints: number = splitArray.bodymax;
+                    markArray.push(`${splitArrayMark}/${splitArrayMaxPoints}`);
 
                     console.debug(
-                        `subject: ${splitArraySubject} mark: ${splitArrayMark} weight: ${splitArrayWeight}`
+                        `subject: ${splitArraySubject} mark: ${splitArrayMark}/${splitArrayMaxPoints} weight: ${splitArrayWeight}`
                     );
                 } else {
-                    const splitArrayWeight = splitArray2[0]!.split(",")[0]!;
-
-                    weightArray.push(splitArrayWeight);
+                    markArray.push(splitArrayMark);
 
                     console.debug(
                         `subject: ${splitArraySubject} mark: ${splitArrayMark} weight: ${splitArrayWeight}`
@@ -1243,7 +1244,7 @@ const observer = new MutationObserver((_, obs) => {
                 }
 
                 subjectArray.push(splitArraySubject);
-                markArray.push(splitArrayMark);
+                weightArray.push(splitArrayWeight.toString());
             }
         }
 
