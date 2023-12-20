@@ -11,7 +11,7 @@ const observer2 = new MutationObserver((_, obs) => {
 
     document
       .querySelector("#cphmain_divZnamky > table > tbody")
-      ?.appendChild(clone);
+      ?.append(clone);
 
     const nameOfLastSubjectName: unknown = document.querySelector(
       "#cphmain_divZnamky > table > tbody"
