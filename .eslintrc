@@ -26,7 +26,6 @@
         "no-plusplus": "off",
         "@typescript-eslint/no-magic-numbers": "off",
         "@typescript-eslint/naming-convention": "warn",
-        "prettier/prettier": "warn",
         "no-continue": "off",
         "@typescript-eslint/no-unnecessary-condition": ["warn", { "allowConstantLoopConditions": true }],
         "no-constant-condition": ["error", { "checkLoops": false }],
@@ -39,7 +38,7 @@
         "@typescript-eslint/consistent-type-assertions": "error",
         "func-names": "warn",
         "@typescript-eslint/no-invalid-this": "warn",
-        "@typescript-eslint/no-non-null-assertion": "warn",
+        "@typescript-eslint/no-non-null-assertion": "off",
         "no-alert": "off",
         "@typescript-eslint/no-shadow": "warn",
         "@typescript-eslint/prefer-readonly-parameter-types": "warn",
@@ -57,6 +56,13 @@
         "@typescript-eslint/init-declarations": "off",
         "total-functions/require-strict-mode": "off",
 
-        "max-statements": ["error", {"max": 70 }, { "ignoreTopLevelFunctions": true }]
+        "max-statements": ["error", {"max": 70 }, { "ignoreTopLevelFunctions": true }],
+
+
+        "total-functions/no-partial-division": "off",
+
+        "@typescript-eslint/prefer-destructuring": "off",
+
+        "@typescript-eslint/max-params": ["error", {"max": 5}]
     }
 }

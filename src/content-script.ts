@@ -149,7 +149,7 @@ function fixAbxNext(index: number) {
 
     if (divZnamkyDiv.length > 1) {
         const isMarksWidthBiggerThanViewport =
-            divZnamkyDiv.length * divZnamkyDiv[0].clientWidth >
+            divZnamkyDiv.length * divZnamkyDiv[0]!.clientWidth >
             getpredmetRadekFromIndex(index).querySelector(`div.bx-wrapper > div.bx-viewport`)!.clientWidth;
 
         if (
@@ -167,22 +167,22 @@ function isSubjectWithPoints(subject: string): boolean {
     return subjectsWithPoints.includes(subject);
 }
 
-function convertPercentageToAverage(percentage: number, markPercentage: number[]): number {
+function convertPercentageToAverage(percentage: number, markPercentage: readonly number[]): number {
 
     if (markPercentage[4]) {
         if (isNaN(percentage)) {
             return Number.NaN;
         }
-        if (percentage >= markPercentage[0]) {
+        if (percentage >= markPercentage[0]!) {
             return 1;
         }
-        if (percentage >= markPercentage[1]) {
+        if (percentage >= markPercentage[1]!) {
             return 2;
         }
-        if (percentage >= markPercentage[2]) {
+        if (percentage >= markPercentage[2]!) {
             return 3;
         }
-        if (percentage >= markPercentage[3]) {
+        if (percentage >= markPercentage[3]!) {
             return 4;
         }
         return 5;
@@ -191,16 +191,16 @@ function convertPercentageToAverage(percentage: number, markPercentage: number[]
     if (isNaN(percentage)) {
         return Number.NaN;
     }
-    if (percentage > markPercentage[0]) {
+    if (percentage > markPercentage[0]!) {
         return 1;
     }
-    if (percentage > markPercentage[1]) {
+    if (percentage > markPercentage[1]!) {
         return 2;
     }
-    if (percentage > markPercentage[2]) {
+    if (percentage > markPercentage[2]!) {
         return 3;
     }
-    if (percentage > markPercentage[3]) {
+    if (percentage > markPercentage[3]!) {
         return 4;
     }
     return 5;
@@ -233,16 +233,16 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
         for (const [index, element] of subjectArray.entries()) {
             if (element === allSubject) {
                 if (isSubjectWithPoints(element)) {
-                    sum += Number.parseInt(markArray[index], 10);
+                    sum += Number.parseInt(markArray[index]!, 10);
                 } else {
                     sum +=
-                        markArray[index][1] === "-"
-                            ? (Number.parseInt(markArray[index][0], 10) + 0.5) *
-                              Number.parseInt(weightArray[index], 10)
+                        markArray[index]![1] === "-"
+                            ? (Number.parseInt(markArray[index]![0]!, 10) + 0.5) *
+                              Number.parseInt(weightArray[index]!, 10)
                             : Number(markArray[index]) * Number(weightArray[index]);
                 }
 
-                quantity += Number.parseInt(weightArray[index], 10);
+                quantity += Number.parseInt(weightArray[index]!, 10);
             }
         }
 
@@ -262,7 +262,7 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
             }
 
             // eslint-disable-next-line no-unsanitized/property
-            textBelowSubject[y].outerHTML = `<h2 title="${
+            textBelowSubject[y]!.outerHTML = `<h2 title="${
                 message.percentage
             }: ${percentage}% (${convertPercentageToAverage(
                 percentage, markPercentage
@@ -287,7 +287,7 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
             console.log(`${message.subject}: ${allSubject}   ${message.average}: ${average}`);
 
             // eslint-disable-next-line no-unsanitized/property
-            textBelowSubject[y].outerHTML = `<h2 title="${
+            textBelowSubject[y]!.outerHTML = `<h2 title="${
                 message.average
             }: ${average}" class="ext-h2">${message.average}: ${(
                 Math.round((average + Number.EPSILON) * 100) / 100
@@ -309,9 +309,9 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
 
     if (subjectMark.length > 0) {
         for (let index = 0; index < allSubjects.length; index++) {
-            sumRight += Number.parseInt(subjectMark[index].textContent!, 10);
+            sumRight += Number.parseInt(subjectMark[index]!.textContent!, 10);
 
-            if (Number.parseInt(subjectMark[index].textContent!, 10) >= 4) {
+            if (Number.parseInt(subjectMark[index]!.textContent!, 10) >= 4) {
                 isSubjectMarkWorseThan3Right = true;
             }
         }
@@ -395,18 +395,18 @@ function removeMark(addedMark: Element) {
             const predmetRadek = getParentPredmetRadek(addedMark);
             const cphmain = document.querySelector("#cphmain_DivBySubject")!.querySelectorAll("div.predmet-radek:is([id])");
 
-            const subjectIndex = Array.from(cphmain).indexOf(predmetRadek);
+            subjectIndex = Array.from(cphmain).indexOf(predmetRadek);
 
-            subjectTemporary = allSubjects[subjectIndex];
+            subjectTemporary = allSubjects[subjectIndex]!;
             markTemporary = addedMark.querySelector<HTMLElement>("div.ob")!.textContent!.trim();
             weightTemporary = addedMark.querySelector<HTMLElement>(isSubjectWithPoints(subjectTemporary) ? "div.bod" : "span.w-100")!.textContent!;
         } else {
             const splitArray: string[] = addedMark.getAttribute("data-clasif")!.split('vaha":');
 
-            const splitArray2: string[] = splitArray[3].split('MarkText":"');
+            const splitArray2: string[] = splitArray[3]!.split('MarkText":"');
 
-            markTemporary = splitArray2[1].split('"')[0];
-            subjectTemporary = splitArray[2].split('"')[3];
+            markTemporary = splitArray2[1]!.split('"')[0]!;
+            subjectTemporary = splitArray[2]!.split('"')[3]!;
 
             subjectIndex = allSubjects.indexOf(subjectTemporary);
 
@@ -432,8 +432,8 @@ function removeMark(addedMark: Element) {
             }
 
             weightTemporary = isSubjectWithPoints(subjectTemporary)
-                ? splitArray[0].split('bodymax":')[1].split(',"')[0]
-                : splitArray2[0].split(",")[0];
+                ? splitArray[0]!.split('bodymax":')[1]!.split(',"')[0]!
+                : splitArray2[0]!.split(",")[0]!;
         }
 
         addedMark.remove();
@@ -475,7 +475,7 @@ function removeMark(addedMark: Element) {
 
 function addMarkButton() {
     const select: HTMLSelectElement = document.querySelector("#selectSubject")!;
-    const subjectTemporary: string = select.options[select.selectedIndex].text;
+    const subjectTemporary: string = select.options[select.selectedIndex]!.text;
 
     const markTemporary: string = document.querySelector<HTMLInputElement>("#inputMark")!.value;
 
@@ -651,32 +651,32 @@ function hideWeightFromMarksWithPoints() {
         if (isHideWeightFromPointsOn) {
             for (const [y, element2] of allMarksOf1SubjectWeight.entries()) {
                 element2.style.visibility = "";
-                allMarksOf1SubjectPoints[y].style.height = "";
-                allMarksOf1SubjectPoints[y].style.fontSize = "";
-                allMarksOf1SubjectPoints[y].style.marginTop = "";
-                allMarksOf1SubjectPoints[y].style.lineHeight = "";
+                allMarksOf1SubjectPoints[y]!.style.height = "";
+                allMarksOf1SubjectPoints[y]!.style.fontSize = "";
+                allMarksOf1SubjectPoints[y]!.style.marginTop = "";
+                allMarksOf1SubjectPoints[y]!.style.lineHeight = "";
             }
         } else {
             for (const [y, element2] of allMarksOf1SubjectWeight.entries()) {
                 element2.style.visibility = "hidden";
-                allMarksOf1SubjectPoints[y].style.height = "30px";
-                allMarksOf1SubjectPoints[y].style.fontSize = "25px";
-                allMarksOf1SubjectPoints[y].style.marginTop = "-15px";
-                allMarksOf1SubjectPoints[y].style.lineHeight = "30px";
+                allMarksOf1SubjectPoints[y]!.style.height = "30px";
+                allMarksOf1SubjectPoints[y]!.style.fontSize = "25px";
+                allMarksOf1SubjectPoints[y]!.style.marginTop = "-15px";
+                allMarksOf1SubjectPoints[y]!.style.lineHeight = "30px";
             }
         }
 
         if (areHugeMarksOn && !isHideWeightFromPointsOn) {
             for (let y = 0; y < allMarksOf1SubjectWeight.length; y++) {
-                allMarksOf1SubjectPoints[y].style.cssText += "font-size: 25px; line-height: 30px;";
+                allMarksOf1SubjectPoints[y]!.style.cssText += "font-size: 25px; line-height: 30px;";
             }
         } else if (isHideWeightFromPointsOn) {
             for (let y = 0; y < allMarksOf1SubjectWeight.length; y++) {
-                allMarksOf1SubjectPoints[y].style.cssText += "font-size: 9px;";
+                allMarksOf1SubjectPoints[y]!.style.cssText += "font-size: 9px;";
             }
         } else {
             for (let y = 0; y < allMarksOf1SubjectWeight.length; y++) {
-                allMarksOf1SubjectPoints[y].style.cssText += "font-size: 9px; line-height: 50px;";
+                allMarksOf1SubjectPoints[y]!.style.cssText += "font-size: 9px; line-height: 50px;";
             }
         }
     }
@@ -720,9 +720,9 @@ function hugeMarksButton() {
         for (const [index, element] of marksDivDodatek.entries()) {
             element.style.height = "";
 
-            marksDivDodatekSpan[index].style.height = "";
-            marksDivDodatekSpan[index].style.paddingTop = "";
-            marksDivDodatekSpan[index].style.fontSize = "";
+            marksDivDodatekSpan[index]!.style.height = "";
+            marksDivDodatekSpan[index]!.style.paddingTop = "";
+            marksDivDodatekSpan[index]!.style.fontSize = "";
         }
 
         const allMarksWithPoints = document.querySelectorAll<HTMLElement>(
@@ -744,7 +744,7 @@ function hugeMarksButton() {
         );
 
         for (const element of marksDivNumeral) {
-            const lastClass = element.classList[2] || element.classList[1];
+            const lastClass = element.classList[2]! || element.classList[1]!;
 
             element.id = lastClass;
             element.classList.remove(lastClass);
@@ -753,7 +753,7 @@ function hugeMarksButton() {
 
         for (const marksDivNumeralPoint of marksDivNumeralPoints) {
             const lastClass =
-                marksDivNumeralPoint.classList[2] || marksDivNumeralPoint.classList[1];
+                marksDivNumeralPoint.classList[2]! || marksDivNumeralPoint.classList[1]!;
 
             marksDivNumeralPoint.id = lastClass;
             marksDivNumeralPoint.classList.remove(lastClass);
@@ -765,7 +765,7 @@ function hugeMarksButton() {
             if (element.parentNode!.querySelector("div.bod")!.innerHTML === "") {
                 element.style.cssText += "height: 42px;";
                 if (marksDivDodatekSpan[index] !== undefined) {
-                    marksDivDodatekSpan[index].style.cssText +=
+                    marksDivDodatekSpan[index]!.style.cssText +=
                         "height: 20px; padding-top: 10px; font-size: 25px;";
                 }
             }
@@ -901,7 +901,7 @@ function instaRemoveMarkButton() {
 
 function ifSelectedSubjectHavePoints() {
     const select: HTMLSelectElement = document.querySelector("#selectSubject")!;
-    const subjectTemporary = select.options[select.selectedIndex].text;
+    const subjectTemporary = select.options[select.selectedIndex]!.text;
 
     const inputMarkSelector = document.querySelector<HTMLInputElement>("#inputMark")!;
     const inputWeightSelector = document.querySelector<HTMLInputElement>("#inputWeight")!;
@@ -910,13 +910,13 @@ function ifSelectedSubjectHavePoints() {
 
     inputMarkSelector.maxLength = bool ? 3 : 2;
     inputMarkSelector.placeholder = bool
-        ? message.inputMarkPlaceholderPoints
-        : message.inputMarkPlaceholder;
+        ? message.inputMarkPlaceholderPoints!
+        : message.inputMarkPlaceholder!;
 
     inputWeightSelector.maxLength = bool ? 3 : 2;
     inputWeightSelector.placeholder = bool
-        ? message.inputWeightPlaceholderPoints
-        : message.inputWeightPlaceholder;
+        ? message.inputWeightPlaceholderPoints!
+        : message.inputWeightPlaceholder!;
 
     isSelectedSubjectProgramovani = bool;
 }
@@ -980,28 +980,28 @@ function createSettingsMenu() {
 
     createBt(
         isWideModeOn,
-        message.wideMode,
+        message.wideMode!,
         "btWideMode",
         wideModeButton,
         document.querySelector("#settingsMenuDiv")
     );
     createBt(
         areHugeMarksOn,
-        message.bigMarks,
+        message.bigMarks!,
         "btHugeMarks",
         hugeMarksButton,
         document.querySelector("#settingsMenuDiv")
     );
     createBt(
         isHideWeightFromPointsOn,
-        message.hideWeightPoints,
+        message.hideWeightPoints!,
         "btHideWeightFromPoints",
         hideWeightFromMarksWithPoints,
         document.querySelector("#settingsMenuDiv")
     );
     createBt(
         isReplaceWeightXWith10On,
-        message.replaceWeightXWith10,
+        message.replaceWeightXWith10!,
         "btReplaceWeightXWith10",
         replaceWeightXWith10,
         document.querySelector("#settingsMenuDiv")
@@ -1036,7 +1036,7 @@ function createPredictorMenu() {
 
     createBt(
         true,
-        message.addMark,
+        message.addMark!,
         "btAddMark",
         addMarkButton,
         document.querySelector("#predictorMenuDiv")
@@ -1078,7 +1078,7 @@ function createPredictorMenu() {
 
     createBt(
         isRemoveMarksOn,
-        message.removeMarks,
+        message.removeMarks!,
         "btRemoveMarks",
         removeMarkButton,
         document.querySelector("#predictorMenuDiv")
@@ -1086,7 +1086,7 @@ function createPredictorMenu() {
 
     createBt(
         isInstaRemoveMarksOn,
-        message.instaRemoveMarks,
+        message.instaRemoveMarks!,
         "btInstaRemoveMarks",
         instaRemoveMarkButton,
         document.querySelector("#predictorMenuDiv")
@@ -1129,12 +1129,12 @@ const observer = new MutationObserver((_, obs) => {
         if (document.querySelectorAll<HTMLElement>("div.znamka-v > div.dodatek").length !== document.querySelectorAll<HTMLElement>("div.znamka-v > div.dodatek > span.w-100").length) {
             for (const element of allMarks) {
                 if (element.querySelector(".dodatek > span.w-100") === null) {
-                    const splitArray = element.dataset.clasif!.split('vaha":');
-                    const splitArray2 = splitArray[3].split('MarkText":"');
+                    const splitArray = element.getAttribute("data-clasif")!.split('vaha":');
+                    const splitArray2 = splitArray[3]!.split('MarkText":"');
 
                     const markWeight = document.createElement("span");
                     markWeight.className = "w-100 d-inline-block";
-                    markWeight.textContent = splitArray2[0].split(",")[0];
+                    markWeight.textContent = splitArray2[0]!.split(",")[0]!;
                     element.querySelector(".dodatek")!.prepend(markWeight);
                 }
             }
@@ -1157,7 +1157,7 @@ const observer = new MutationObserver((_, obs) => {
                 pointsOfFirstMarkInAllSubject,
             ] of pointsOfFirstMarkInAllSubjects.entries()) {
                 if (pointsOfFirstMarkInAllSubject.innerHTML !== "") {
-                    subjectsWithPoints.push(allSubjects[index]);
+                    subjectsWithPoints.push(allSubjects[index]!);
                 }
             }
         }
@@ -1170,7 +1170,7 @@ const observer = new MutationObserver((_, obs) => {
                     const predmetRadek = getParentPredmetRadek(pointsOfFirstMarkInAllSubject);
                     const PredmetRadekChildrens = predmetRadek.parentElement!.querySelectorAll("div.predmet-radek:is([id])");
 
-                    subjectsWithPoints.push(allSubjects[Array.from(PredmetRadekChildrens).indexOf(predmetRadek)]);
+                    subjectsWithPoints.push(allSubjects[Array.from(PredmetRadekChildrens).indexOf(predmetRadek)]!);
                 }
             }
         }
@@ -1210,9 +1210,9 @@ const observer = new MutationObserver((_, obs) => {
         for (const element of allMarksSelector) {
             const splitArray = element.getAttribute("data-clasif")!.split('vaha":');
 
-            const splitArray2 = splitArray[3].split('MarkText":"');
+            const splitArray2 = splitArray[3]!.split('MarkText":"');
 
-            const splitArrayMark = splitArray2[1].split('"')[0];
+            const splitArrayMark = splitArray2[1]!.split('"')[0]!;
 
             if (
                 !(
@@ -1222,10 +1222,10 @@ const observer = new MutationObserver((_, obs) => {
                     splitArrayMark === "X"
                 )
             ) {
-                const splitArraySubject = splitArray[2].split('"')[3];
+                const splitArraySubject = splitArray[2]!.split('"')[3]!;
 
                 if (isSubjectWithPoints(splitArraySubject)) {
-                    const splitArrayWeight = splitArray[0].split('bodymax":')[1].split(',"')[0];
+                    const splitArrayWeight = splitArray[0]!.split('bodymax":')[1]!.split(',"')[0]!;
 
                     weightArray.push(splitArrayWeight);
 
@@ -1233,7 +1233,7 @@ const observer = new MutationObserver((_, obs) => {
                         `subject: ${splitArraySubject} mark: ${splitArrayMark} weight: ${splitArrayWeight}`
                     );
                 } else {
-                    const splitArrayWeight = splitArray2[0].split(",")[0];
+                    const splitArrayWeight = splitArray2[0]!.split(",")[0]!;
 
                     weightArray.push(splitArrayWeight);
 
@@ -1251,9 +1251,9 @@ const observer = new MutationObserver((_, obs) => {
 
         const h2Above = document.querySelector("header.bk-prubzna:nth-child(1) > h2:nth-child(1)");
 
-        createBt(isSettingsOn, message.settings, "btSettings", settingsMenu, h2Above);
+        createBt(isSettingsOn, message.settings!, "btSettings", settingsMenu, h2Above);
 
-        createBt(isPredictorOn, message.predictor, "btPredictor", predictorMenu, h2Above);
+        createBt(isPredictorOn, message.predictor!, "btPredictor", predictorMenu, h2Above);
 
         createSettingsMenu();
 

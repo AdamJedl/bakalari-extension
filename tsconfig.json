@@ -5,12 +5,7 @@
         "outDir": "dist/js",
         "rootDir": "src",
         "noEmitOnError": true,
-        "lib": [
-            "ES6",
-            "ES2021",
-            "DOM",
-            "DOM.Iterable"
-        ],
+        "lib": ["ES6", "ES2023", "DOM", "DOM.Iterable"],
 
         "strict": true,
         "noImplicitAny": true,
@@ -26,7 +21,9 @@
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
 
-        "typeRoots": [ "node_modules/@types" ],
-        "esModuleInterop": true
+        "typeRoots": ["node_modules/@types"],
+        "esModuleInterop": true,
+
+        "noUncheckedIndexedAccess": true
     }
 }
