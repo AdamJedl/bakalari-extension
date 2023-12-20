@@ -127,14 +127,15 @@ function isNanStrict(a: string) {
 function getpredmetRadekFromIndex(index: number) {
     const cphmain = document.querySelector("#cphmain_DivBySubject")!.querySelectorAll("div.predmet-radek:is([id])");
 
-    for (const [index2, element] of cphmain.entries()) {
+    const temporary = cphmain[index];
 
-        if (index2 === index) {
-            return element;
-        }
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (temporary === undefined) {
+        throw new Error(`predmetRadek with index ${index} doesn't exist`);
     }
 
-    throw new Error(`predmetRadek with index ${index} doesn't exist`);
+    return temporary;
+
 }
 
 function fixAbxNext(index: number) {
@@ -163,13 +164,7 @@ function fixAbxNext(index: number) {
 }
 
 function isSubjectWithPoints(subject: string): boolean {
-    for (const subjectsWithPoint of subjectsWithPoints) {
-        if (subject === subjectsWithPoint) {
-            return true;
-        }
-    }
-
-    return false;
+    return subjectsWithPoints.includes(subject);
 }
 
 function convertPercentageToAverage(percentage: number, markPercentage: number[]): number {
@@ -400,13 +395,7 @@ function removeMark(addedMark: Element) {
             const predmetRadek = getParentPredmetRadek(addedMark);
             const cphmain = document.querySelector("#cphmain_DivBySubject")!.querySelectorAll("div.predmet-radek:is([id])");
 
-            for (const element of cphmain) {
-                if (element === predmetRadek) {
-                    break;
-                }
-
-                subjectIndex++;
-            }
+            const subjectIndex = Array.from(cphmain).indexOf(predmetRadek);
 
             subjectTemporary = allSubjects[subjectIndex];
             markTemporary = addedMark.querySelector<HTMLElement>("div.ob")!.textContent!.trim();
@@ -419,20 +408,11 @@ function removeMark(addedMark: Element) {
             markTemporary = splitArray2[1].split('"')[0];
             subjectTemporary = splitArray[2].split('"')[3];
 
-            let subjectIndexTemporary;
+            subjectIndex = allSubjects.indexOf(subjectTemporary);
 
-            for (const [index, item] of allSubjects.entries()) {
-                if (item === subjectTemporary) {
-                    subjectIndexTemporary = index;
-                    break;
-                }
-            }
-
-            if (subjectIndexTemporary === undefined) {
+            if (subjectIndex === -1) {
                 throw new TypeError(`subject "${subjectTemporary}" is not in allSubjects\nallSubjects: ${allSubjects.toString()}`);
             }
-
-            subjectIndex = subjectIndexTemporary;
 
             if (
                 markTemporary === "A" ||
@@ -446,9 +426,7 @@ function removeMark(addedMark: Element) {
 
                 const allTooltipsSelector = document.querySelectorAll("div.ui-tooltip");
 
-                for (const element of allTooltipsSelector) {
-                    element.remove();
-                }
+                allTooltipsSelector.forEach(element => { element.remove() });
 
                 return;
             }
@@ -485,9 +463,7 @@ function removeMark(addedMark: Element) {
 
         const allTooltipsSelector = document.querySelectorAll("div.ui-tooltip");
 
-        for (const element of allTooltipsSelector) {
-            element.remove();
-        }
+        allTooltipsSelector.forEach(element => { element.remove() });
 
         refreshOrCreateAverage(true);
     }
@@ -547,14 +523,9 @@ function addMarkButton() {
     weightArray.push(weightTemporary);
 
     const cphmain = document.querySelector("#cphmain_DivBySubject")!.querySelectorAll("div.predmet-radek:is([id])");
-    let predmetRadek: Element;
 
-    for (const [index, element] of cphmain.entries()) {
-        if (index === select.selectedIndex) {
-            predmetRadek = element;
-            break;
-        }
-    }
+    const predmetRadek = cphmain[select.selectedIndex];
+    
 
     const divPredmetRadekSelector = predmetRadek!.querySelector(`div > div > div.znamky`);
 
@@ -653,17 +624,10 @@ function hideWeightFromMarksWithPoints() {
             continue;
         }
 
-        let index = 0;
         const cphmain = document.querySelector("#cphmain_DivBySubject")!.querySelectorAll("div.predmet-radek:is([id])");
         const predmetRadek = getParentPredmetRadek(element);
 
-        for (const element2 of cphmain) {
-            if (element2 === predmetRadek) {
-                break;
-            }
-
-            index++;
-        }
+        const index = Array.from(cphmain).indexOf(predmetRadek);
 
         let allMarksOf1SubjectWeight = getpredmetRadekFromIndex(index).querySelectorAll<HTMLElement>(
             `div.bx-wrapper:nth-child(2) > div.bx-viewport:nth-child(1) > div.znamky > div.znamka-v.tooltip-bubble > div.dodatek > span.w-100`
@@ -827,11 +791,9 @@ function hugeMarksButton() {
 function settingsMenu() {
     const headerSelector = document.querySelector<HTMLElement>("#settingsMenuHeader");
 
-    if (isSettingsOn) {
-        headerSelector!.style.cssText = "padding-top: 0px; padding-bottom: 0px; display: none;";
-    } else {
-        headerSelector!.style.cssText = "padding-top: 0px; padding-bottom: 0px;";
-    }
+    headerSelector!.style.cssText = isSettingsOn
+        ? "padding-top: 0px; padding-bottom: 0px; display: none;"
+        : "padding-top: 0px; padding-bottom: 0px;";
 
     document.querySelector<HTMLElement>("#btSettings")!.style.cssText += isSettingsOn
         ? "background: #fff; color: #00A2E2;"
@@ -912,13 +874,9 @@ function createHeaderAndDiv(
 function removeMarkButton() {
     isRemoveMarksOn = !isRemoveMarksOn;
 
-    if (isRemoveMarksOn) {
-        document
-            .querySelector("#btRemoveMarks")!
-            .classList.remove("ext-disabled");
-    } else {
-        document.querySelector("#btRemoveMarks")!.classList.add("ext-disabled");
-    }
+    isRemoveMarksOn
+        ? document.querySelector("#btRemoveMarks")!.classList.remove("ext-disabled")
+        : document.querySelector("#btRemoveMarks")!.classList.add("ext-disabled");
 
     localStorage.setItem("removeMarkOn", isRemoveMarksOn.toString());
 
@@ -930,11 +888,9 @@ function removeMarkButton() {
 function instaRemoveMarkButton() {
     isInstaRemoveMarksOn = !isInstaRemoveMarksOn;
 
-    if (isInstaRemoveMarksOn) {
-        document.querySelector("#btInstaRemoveMarks")!.classList.remove("ext-disabled");
-    } else {
-        document.querySelector("#btInstaRemoveMarks")!.classList.add("ext-disabled");
-    }
+    isInstaRemoveMarksOn
+        ? document.querySelector("#btInstaRemoveMarks")!.classList.remove("ext-disabled")
+        : document.querySelector("#btInstaRemoveMarks")!.classList.add("ext-disabled");
 
     localStorage.setItem("instaRemoveMarksOn", isInstaRemoveMarksOn.toString());
 
@@ -1142,9 +1098,7 @@ const observer = new MutationObserver((_, obs) => {
     const divWait = document.querySelector("div#obsah._loadingContainer:nth-child(10) > div > main > div");
 
     if (divWait) {
-        const predmetySelector: HTMLElement = document.querySelector<HTMLElement>("#predmety")!;
-
-        predmetySelector.style.paddingBottom = "20px";
+        document.querySelector<HTMLElement>("#predmety")!.style.paddingBottom = "20px";
 
         const allMarks = document.querySelectorAll<HTMLElement>("div.znamka-v.tooltip-bubble");
 
@@ -1190,9 +1144,7 @@ const observer = new MutationObserver((_, obs) => {
             "div.leva:nth-child(1) > div.obal._subject_detail.link:nth-child(1) > h3:nth-child(1)"
         );
 
-        for (const element of allSubjectNamesSelector) {
-            allSubjects.push(element.innerHTML);
-        }
+        allSubjects.push(...Array.from(allSubjectNamesSelector, element => element.textContent!));
 
         const pointsOfFirstMarkInAllSubjects: NodeListOf<Element> = document.querySelectorAll(
             "div.znamky > div.znamka-v.tooltip-bubble:nth-child(1) > div.bod"
@@ -1218,18 +1170,7 @@ const observer = new MutationObserver((_, obs) => {
                     const predmetRadek = getParentPredmetRadek(pointsOfFirstMarkInAllSubject);
                     const PredmetRadekChildrens = predmetRadek.parentElement!.querySelectorAll("div.predmet-radek:is([id])");
 
-                    let numberOfSubjects = 0;
-
-                    for (const element of PredmetRadekChildrens) {
-                      
-                        if (element === predmetRadek) {
-                            break;
-                        }
-
-                        numberOfSubjects++;
-                    }
-
-                    subjectsWithPoints.push(allSubjects[numberOfSubjects]);
+                    subjectsWithPoints.push(allSubjects[Array.from(PredmetRadekChildrens).indexOf(predmetRadek)]);
                 }
             }
         }
