@@ -390,46 +390,95 @@ function removeMark(addedMark: Element) {
 
   function removeMarkIdk() {
 
-    const predmetRadek = getParentPredmetRadek(addedMark);
-    const cphmain = document.querySelector("#cphmain_DivBySubject")!.children;
+    let subjectTemporary: string;
+    let markTemporary: string;
+    let weightTemporary: string;
+
     let subjectIndex = 0;
 
-    for (const element of cphmain) {
-      if (element === predmetRadek) {
-        break;
-      }
-      else if (element.id !== "") {
+    if (addedMark.getAttribute("data-clasif") === null) {
+      const predmetRadek = getParentPredmetRadek(addedMark);
+      const cphmain = document.querySelector("#cphmain_DivBySubject")!.querySelectorAll("div.predmet-radek:is([id])");
+
+      for (const element of cphmain) {
+        if (element === predmetRadek) {
+          break;
+        }
+
         subjectIndex++;
       }
-    }
 
-    const subjectTemporary = allSubjects[subjectIndex];
-    const markTemporary = addedMark.querySelector<HTMLElement>("div.ob")!.textContent?.trim();
-
-    let weightTemporary;
-
-    if (isSubjectWithPoints(subjectTemporary)) {
-      weightTemporary = addedMark.querySelector<HTMLElement>("div.bod")!.textContent === "X" ? 10 : addedMark.querySelector<HTMLElement>("div.bod")!.textContent;
-    } else if (addedMark.querySelector<HTMLElement>("span.w-100")!.textContent === "X") {
-      weightTemporary = 10;
+      subjectTemporary = allSubjects[subjectIndex];
+      markTemporary = addedMark.querySelector<HTMLElement>("div.ob")!.textContent!.trim();
+      weightTemporary = addedMark.querySelector<HTMLElement>(isSubjectWithPoints(subjectTemporary) ? "div.bod" : "span.w-100")!.textContent!;
     } else {
-      weightTemporary = addedMark.querySelector<HTMLElement>("span.w-100")!.textContent;
+      const splitArray: string[] = addedMark.getAttribute("data-clasif")!.split('vaha":');
+
+      const splitArray2: string[] = splitArray[3].split('MarkText":"');
+
+      markTemporary = splitArray2[1].split('"')[0];
+      subjectTemporary = splitArray[2].split('"')[3];
+
+      let subjectIndexTemporary;
+
+      for (const [index, item] of allSubjects.entries()) {
+        if (item === subjectTemporary) {
+          subjectIndexTemporary = index;
+          break;
+        }
+      }
+
+      if (subjectIndexTemporary === undefined) {
+        throw new TypeError(`subject "${subjectTemporary}" is not in allSubjects\nallSubjects: ${allSubjects.toString()}`);
+      }
+
+      subjectIndex = subjectIndexTemporary;
+
+      if (
+        markTemporary === "A" ||
+        markTemporary === "N" ||
+        markTemporary === "?" ||
+        markTemporary === "X"
+      ) {
+        addedMark.remove();
+
+        fixAbxNext(subjectIndex);
+
+        const allTooltipsSelector = document.querySelectorAll("div.ui-tooltip");
+
+        for (const element of allTooltipsSelector) {
+          element.remove();
+        }
+
+        return;
+      }
+
+      weightTemporary = isSubjectWithPoints(subjectTemporary)
+        ? splitArray[0].split('bodymax":')[1].split(',"')[0]
+        : splitArray2[0].split(",")[0];
     }
 
     addedMark.remove();
 
+    let isMarkFound = false;
+
     for (let index = 0; index < subjectArray.length; index++) {
       if (
-        subjectTemporary === subjectArray[index] &&
+        subjectArray[index] === subjectTemporary &&
         markArray[index] === markTemporary &&
         weightArray[index] === weightTemporary
       ) {
-        subjectArray[index] = "";
-        markArray[index] = "0";
-        weightArray[index] = "0";
+        subjectArray.splice(index, 1);
+        markArray.splice(index, 1);
+        weightArray.splice(index, 1);
 
+        isMarkFound = true;
         break;
       }
+    }
+
+    if (!isMarkFound) {
+      throw new Error(`mark to remove not found:\nsubjectTemporary: ${subjectTemporary}\nmarkTemporary: ${markTemporary}\nweightTemporary: ${weightTemporary}\nsubjectArray: ${subjectArray}\nmarkArray: ${markArray}\nweightArray: ${weightArray}`);
     }
 
     fixAbxNext(subjectIndex);
