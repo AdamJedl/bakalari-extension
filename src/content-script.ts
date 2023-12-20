@@ -844,7 +844,7 @@ function createBt(
   On: boolean,
   value: string,
   id: string,
-  clickFunction: any,
+  clickFunction: () => void,
   parent: Element | null
 ) {
   const btName = document.createElement("input");
@@ -1215,7 +1215,7 @@ const observer = new MutationObserver((_, obs) => {
       );
 
 
-    if (allMarks.length == pointsOfFirstMarkInAllSubjects.length) {
+    if (allMarks.length === pointsOfFirstMarkInAllSubjects.length) {
       for (const [
         index,
         pointsOfFirstMarkInAllSubject,
@@ -1238,7 +1238,7 @@ const observer = new MutationObserver((_, obs) => {
 
           for (const element of PredmetRadekChildrens) {
             
-            if (element == predmetRadek) {
+            if (element === predmetRadek) {
               break;
             }
 
