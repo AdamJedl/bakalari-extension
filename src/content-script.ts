@@ -953,9 +953,11 @@ function replaceTypeWithWeight() {
         );
 
         for (const element of allMarksWeight) {
-            element.textContent = JSON.parse(
-                element.parentElement!.parentElement!.getAttribute("data-clasif")!
-            ).vaha;
+
+            const markJson = element.parentElement!.parentElement!.getAttribute("data-clasif");
+            if (markJson !== null) {
+                element.textContent = JSON.parse(markJson).vaha;
+            }
         }
     }
 
