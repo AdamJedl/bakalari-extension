@@ -125,7 +125,7 @@ function isNanStrict(a: string) {
 }
 
 function convertMarkToNumber(mark: string ) {
-    const markTemporary: string = mark.replaceAll(/(?<!e)-/giv, ".5");
+    const markTemporary: string = mark.replaceAll(/(?<!e)-/giu, ".5");
     if (markTemporary.startsWith(".5") && markTemporary.length > 2) {
         return `-${markTemporary.slice(2)}`;
     }

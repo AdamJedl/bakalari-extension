@@ -63,6 +63,8 @@
 
         "@typescript-eslint/prefer-destructuring": "off",
 
-        "@typescript-eslint/max-params": ["error", {"max": 5}]
+        "@typescript-eslint/max-params": ["error", {"max": 5}],
+
+        "regexp/require-unicode-sets-regexp": "off"
     }
 }
