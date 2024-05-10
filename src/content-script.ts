@@ -88,8 +88,6 @@ const allSubjects: string[] = [];
 
 const subjectsWithPoints: string[] = [];
 
-let numberOfTries = 0;
-
 
 function stipendium(prumer: number, typeOfAverage: string) {
     if (
@@ -1106,178 +1104,153 @@ function createPredictorMenu() {
 }
 
 
-const observer = new MutationObserver((_, obs) => {
+document.querySelector<HTMLElement>("#predmety")!.style.paddingBottom = "20px";
 
-    if (!document.querySelector("div#obsah._loadingContainer:nth-child(10) > div > main > div")) {
-        
-        if (numberOfTries === 200) {
-            console.log(`"div#obsah._loadingContainer:nth-child(10) > div > main > div" is null`);
-            obs.disconnect();
-        }
-    
-        numberOfTries++;
+const allMarks = document.querySelectorAll<HTMLElement>("div.znamka-v.tooltip-bubble");
 
-        return;
+for (const allMark of allMarks) {
+    if (!allMark.classList.contains("addedMark")) {
+        allMark.addEventListener(
+            "click",
+            function () {removeMark(this);},
+            false
+        );
     }
+}
+
+document.querySelector("div.bk-menu-hide")?.addEventListener(
+    "click",
+    function () {
+        if (document.querySelector("div.bk-menu-hide")!.clientWidth < 150) {
+            fixAllAbxNext();
+        } else {
+            setTimeout(() => {
+                fixAllAbxNext();
+            }, 300);
+        }
+    },
+    false
+);
+
+if (document.querySelectorAll<HTMLElement>("div.znamka-v > div.dodatek").length !== document.querySelectorAll<HTMLElement>("div.znamka-v > div.dodatek > span.w-100").length) {
+    for (const element of allMarks) {
+        if (element.querySelector(".dodatek > span.w-100") === null) {
+            const splitArray = element.getAttribute("data-clasif")!.split('vaha":');
+            const splitArray2 = splitArray[3]!.split('MarkText":"');
+
+            const markWeight = document.createElement("span");
+            markWeight.className = "w-100 d-inline-block";
+            markWeight.textContent = splitArray2[0]!.split(",")[0]!;
+            element.querySelector(".dodatek")!.prepend(markWeight);
+        }
+    }
+}
+
+const allSubjectNamesSelector = document.querySelectorAll(
+    "div.leva:nth-child(1) > div.obal._subject_detail.link:nth-child(1) > h3:nth-child(1)"
+);
+
+allSubjects.push(...Array.from(allSubjectNamesSelector, element => element.textContent!));
+
+const pointsOfFirstMarkInAllSubjects: NodeListOf<Element> = document.querySelectorAll(
+    "div.znamky > div.znamka-v.tooltip-bubble:nth-child(1) > div.bod"
+);
 
 
-    document.querySelector<HTMLElement>("#predmety")!.style.paddingBottom = "20px";
+if (allMarks.length === pointsOfFirstMarkInAllSubjects.length) {
+    for (const [
+        index,
+        pointsOfFirstMarkInAllSubject,
+    ] of pointsOfFirstMarkInAllSubjects.entries()) {
+        if (pointsOfFirstMarkInAllSubject.innerHTML !== "") {
+            subjectsWithPoints.push(allSubjects[index]!);
+        }
+    }
+}
+else {
+    for (
+        const pointsOfFirstMarkInAllSubject
+    of pointsOfFirstMarkInAllSubjects) {
+        if (pointsOfFirstMarkInAllSubject.innerHTML !== "") {
 
-    const allMarks = document.querySelectorAll<HTMLElement>("div.znamka-v.tooltip-bubble");
+            const predmetRadek = getParentPredmetRadek(pointsOfFirstMarkInAllSubject);
+            const PredmetRadekChildrens = predmetRadek.parentElement!.querySelectorAll("div.predmet-radek:is([id])");
 
-    for (const allMark of allMarks) {
-        if (!allMark.classList.contains("addedMark")) {
-            allMark.addEventListener(
-                "click",
-                function () {removeMark(this);},
-                false
+            subjectsWithPoints.push(allSubjects[Array.from(PredmetRadekChildrens).indexOf(predmetRadek)]!);
+        }
+    }
+}
+
+isWideModeOn = !isWideModeOn;
+
+wideModeButton();
+
+const viewportSelector = document.querySelectorAll("div.bx-wrapper > div.bx-viewport");
+
+for (const element of viewportSelector) {
+    element.setAttribute("style", "height: 79px");
+}
+
+if (areHugeMarksOn) {
+    areHugeMarksOn = false;
+
+    hugeMarksButton();
+}
+
+if (isHideWeightFromPointsOn) {
+    isHideWeightFromPointsOn = false;
+
+    hideWeightFromMarksWithPoints();
+}
+
+if (isReplaceTypeWithWeightOn) {
+    isReplaceTypeWithWeightOn = false;
+
+    replaceTypeWithWeight();
+}
+
+const allMarksSelector = document.querySelectorAll<HTMLElement>(
+    "div.znamka-v.tooltip-bubble"
+);
+
+for (const element of allMarksSelector) {
+    const splitArray: unknown = JSON.parse(element.getAttribute("data-clasif")!);
+
+    const splitArrayMark: string = splitArray.MarkText;
+
+    if (!isNanStrict(convertMarkToNumber(splitArray.MarkText))) {
+        const splitArraySubject: string = splitArray.nazev;
+        const splitArrayWeight: number = splitArray.vaha;
+
+        if (isSubjectWithPoints(splitArraySubject)) {
+
+            const splitArrayMaxPoints: number = splitArray.bodymax;
+            markArray.push(`${splitArrayMark}/${splitArrayMaxPoints}`);
+
+            console.debug(
+                `subject: ${splitArraySubject} mark: ${splitArrayMark}/${splitArrayMaxPoints} weight: ${splitArrayWeight}`
+            );
+        } else {
+            markArray.push(splitArrayMark);
+
+            console.debug(
+                `subject: ${splitArraySubject} mark: ${splitArrayMark} weight: ${splitArrayWeight}`
             );
         }
+
+        subjectArray.push(splitArraySubject);
+        weightArray.push(splitArrayWeight.toString());
     }
+}
 
-    document.querySelector("div.bk-menu-hide")?.addEventListener(
-        "click",
-        function () {
-            if (document.querySelector("div.bk-menu-hide")!.clientWidth < 150) {
-                fixAllAbxNext();
-            } else {
-                setTimeout(() => {
-                    fixAllAbxNext();
-                }, 300);
-            }
-        },
-        false
-    );
+refreshOrCreateAverage(false);
 
-    if (document.querySelectorAll<HTMLElement>("div.znamka-v > div.dodatek").length !== document.querySelectorAll<HTMLElement>("div.znamka-v > div.dodatek > span.w-100").length) {
-        for (const element of allMarks) {
-            if (element.querySelector(".dodatek > span.w-100") === null) {
-                const splitArray = element.getAttribute("data-clasif")!.split('vaha":');
-                const splitArray2 = splitArray[3]!.split('MarkText":"');
+const h2Above = document.querySelector("header.bk-prubzna:nth-child(1) > h2:nth-child(1)");
 
-                const markWeight = document.createElement("span");
-                markWeight.className = "w-100 d-inline-block";
-                markWeight.textContent = splitArray2[0]!.split(",")[0]!;
-                element.querySelector(".dodatek")!.prepend(markWeight);
-            }
-        }
-    }
+createBt(isSettingsOn, message.settings!, "btSettings", settingsMenu, h2Above);
 
-    const allSubjectNamesSelector = document.querySelectorAll(
-        "div.leva:nth-child(1) > div.obal._subject_detail.link:nth-child(1) > h3:nth-child(1)"
-    );
+createBt(isPredictorOn, message.predictor!, "btPredictor", predictorMenu, h2Above);
 
-    allSubjects.push(...Array.from(allSubjectNamesSelector, element => element.textContent!));
+createSettingsMenu();
 
-    const pointsOfFirstMarkInAllSubjects: NodeListOf<Element> = document.querySelectorAll(
-        "div.znamky > div.znamka-v.tooltip-bubble:nth-child(1) > div.bod"
-    );
-
-
-    if (allMarks.length === pointsOfFirstMarkInAllSubjects.length) {
-        for (const [
-            index,
-            pointsOfFirstMarkInAllSubject,
-        ] of pointsOfFirstMarkInAllSubjects.entries()) {
-            if (pointsOfFirstMarkInAllSubject.innerHTML !== "") {
-                subjectsWithPoints.push(allSubjects[index]!);
-            }
-        }
-    }
-    else {
-        for (
-            const pointsOfFirstMarkInAllSubject
-        of pointsOfFirstMarkInAllSubjects) {
-            if (pointsOfFirstMarkInAllSubject.innerHTML !== "") {
-                
-                const predmetRadek = getParentPredmetRadek(pointsOfFirstMarkInAllSubject);
-                const PredmetRadekChildrens = predmetRadek.parentElement!.querySelectorAll("div.predmet-radek:is([id])");
-
-                subjectsWithPoints.push(allSubjects[Array.from(PredmetRadekChildrens).indexOf(predmetRadek)]!);
-            }
-        }
-    }
-
-    isWideModeOn = !isWideModeOn;
-
-    wideModeButton();
-
-    const viewportSelector = document.querySelectorAll("div.bx-wrapper > div.bx-viewport");
-
-    for (const element of viewportSelector) {
-        element.setAttribute("style", "height: 79px");
-    }
-
-    if (areHugeMarksOn) {
-        areHugeMarksOn = false;
-
-        hugeMarksButton();
-    }
-
-    if (isHideWeightFromPointsOn) {
-        isHideWeightFromPointsOn = false;
-
-        hideWeightFromMarksWithPoints();
-    }
-
-    if (isReplaceTypeWithWeightOn) {
-        isReplaceTypeWithWeightOn = false;
-
-        replaceTypeWithWeight();
-    }
-
-    const allMarksSelector = document.querySelectorAll<HTMLElement>(
-        "div.znamka-v.tooltip-bubble"
-    );
-
-    for (const element of allMarksSelector) {
-        const splitArray: unknown = JSON.parse(element.getAttribute("data-clasif")!);
-
-        const splitArrayMark: string = splitArray.MarkText;
-
-        if (!isNanStrict(convertMarkToNumber(splitArray.MarkText))) {
-            const splitArraySubject: string = splitArray.nazev;
-            const splitArrayWeight: number = splitArray.vaha;
-
-            if (isSubjectWithPoints(splitArraySubject)) {
-                
-                const splitArrayMaxPoints: number = splitArray.bodymax;
-                markArray.push(`${splitArrayMark}/${splitArrayMaxPoints}`);
-
-                console.debug(
-                    `subject: ${splitArraySubject} mark: ${splitArrayMark}/${splitArrayMaxPoints} weight: ${splitArrayWeight}`
-                );
-            } else {
-                markArray.push(splitArrayMark);
-
-                console.debug(
-                    `subject: ${splitArraySubject} mark: ${splitArrayMark} weight: ${splitArrayWeight}`
-                );
-            }
-
-            subjectArray.push(splitArraySubject);
-            weightArray.push(splitArrayWeight.toString());
-        }
-    }
-
-    refreshOrCreateAverage(false);
-
-    const h2Above = document.querySelector("header.bk-prubzna:nth-child(1) > h2:nth-child(1)");
-
-    createBt(isSettingsOn, message.settings!, "btSettings", settingsMenu, h2Above);
-
-    createBt(isPredictorOn, message.predictor!, "btPredictor", predictorMenu, h2Above);
-
-    createSettingsMenu();
-
-    createPredictorMenu();
-
-    obs.disconnect();
-});
-
-observer.observe(document, {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    childList: true,
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    subtree: true
-});
+createPredictorMenu();
