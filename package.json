@@ -23,15 +23,15 @@
         "lint-fix": "eslint --fix . --ext .ts",
 
         "clean": "rm -rf dist dist-firefox dist-userscript",
-        "clean-all": "rm -rf dist dist-firefox dist-userscript node_modules package-lock.json"
+        "clean-all": "rm -rf dist dist-firefox dist-userscript node_modules package-lock.json bun.lockb yarn.lock"
     },
     "author": "AdamJedl",
     "license": "GPL-3.0",
     "devDependencies": {
         "@swc-node/register": "^1.9.1",
-        "@swc/core": "^1.4.17",
+        "@swc/core": "^1.5.3",
         "@types/chrome": "^0.0.267",
-        "@types/node": "^20.12.8",
+        "@types/node": "^20.12.10",
         "@types/webpack": "^5.28.5",
         "copy-webpack-plugin": "^12.0.2",
         "css-minimizer-webpack-plugin": "^6.0.0",
