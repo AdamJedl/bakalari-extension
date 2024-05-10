@@ -9,6 +9,7 @@
 // @version     1.2.1
 // @author      AdamJedl
 // @homepageURL https://github.com/AdamJedl/bakalari-extension
+// @downloadURL https://github.com/AdamJedl/bakalari-extension/releases/latest/download/bakalari-extension.user.js
 // @license     GPL-3.0
 // ==/UserScript==
 
