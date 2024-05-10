@@ -1,11 +1,11 @@
 {
     "compilerOptions": {
-        "target": "ES6",
+        "target": "ES2021",
         "module": "commonjs",
         "outDir": "dist/js",
         "rootDir": "src",
         "noEmitOnError": true,
-        "lib": ["ES6", "ES2023", "DOM", "DOM.Iterable"],
+        "lib": ["ES2021", "DOM", "DOM.Iterable"],
 
         "strict": true,
         "noImplicitAny": true,
