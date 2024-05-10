@@ -87,6 +87,15 @@ const allSubjects: string[] = [];
 const subjectsWithPoints: string[] = [];
 
 
+interface DataClasif {
+    bodymax: number,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    MarkText: string,
+    nazev: string,
+    vaha: number
+}
+
+
 function stipendium(prumer: number, typeOfAverage: string) {
     if (
         (typeOfAverage === "left" && isSubjectMarkWorseThan3Left) ||
@@ -411,7 +420,7 @@ function removeMark(addedMark: Element) {
                 : addedMark.querySelector<HTMLElement>("div.ob")!.textContent!.trim();
             weightTemporary = addedMark.querySelector<HTMLElement>("span.w-100")!.textContent!;
         } else {
-            const splitArray: unknown = JSON.parse(addedMark.getAttribute("data-clasif")!);
+            const splitArray: DataClasif = JSON.parse(addedMark.getAttribute("data-clasif")!);
 
             subjectTemporary = splitArray.nazev;
             subjectIndex = allSubjects.indexOf(subjectTemporary);
@@ -1230,7 +1239,7 @@ const allMarksSelector = document.querySelectorAll<HTMLElement>(
 );
 
 for (const element of allMarksSelector) {
-    const splitArray: unknown = JSON.parse(element.getAttribute("data-clasif")!);
+    const splitArray: DataClasif = JSON.parse(element.getAttribute("data-clasif")!);
 
     const splitArrayMark: string = splitArray.MarkText;
 
