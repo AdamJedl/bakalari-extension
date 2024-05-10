@@ -396,95 +396,93 @@ function getParentPredmetRadek(element: Element) {
 
 function removeMark(addedMark: Element) {
 
-    function removeMarkIdk() {
-
-        let subjectTemporary: string;
-        let markTemporary: string;
-        let weightTemporary: string;
-
-        let subjectIndex = 0;
-
-        if (addedMark.getAttribute("data-clasif") === null) {
-            const predmetRadek = getParentPredmetRadek(addedMark);
-            const cphmain = document.querySelector("#cphmain_DivBySubject")!.querySelectorAll("div.predmet-radek:is([id])");
-
-            subjectIndex = Array.from(cphmain).indexOf(predmetRadek);
-
-            subjectTemporary = allSubjects[subjectIndex]!;
-            markTemporary = isSubjectWithPoints(subjectTemporary)
-                ? `${addedMark
-                      .querySelector<HTMLElement>("div.ob")!
-                      .textContent!.trim()}/${addedMark
-                      .querySelector<HTMLElement>("div.bod")!
-                      .textContent!.trim()}`
-                : addedMark.querySelector<HTMLElement>("div.ob")!.textContent!.trim();
-            weightTemporary = addedMark.querySelector<HTMLElement>("span.w-100")!.textContent!;
-        } else {
-            const splitArray: DataClasif = JSON.parse(addedMark.getAttribute("data-clasif")!);
-
-            subjectTemporary = splitArray.nazev;
-            subjectIndex = allSubjects.indexOf(subjectTemporary);
-
-            markTemporary = isSubjectWithPoints(subjectTemporary)
-                ? `${splitArray.MarkText}/${splitArray.bodymax}`
-                : splitArray.MarkText;
-
-            if (subjectIndex === -1) {
-                throw new TypeError(`subject "${subjectTemporary}" is not in allSubjects\nallSubjects: ${allSubjects.toString()}`);
-            }
-
-            if (isNanStrict(convertMarkToNumber(splitArray.MarkText))) {
-                addedMark.remove();
-
-                fixAbxNext(subjectIndex);
-
-                const allTooltipsSelector = document.querySelectorAll("div.ui-tooltip");
-
-                allTooltipsSelector.forEach((element) => {
-                    element.remove();
-                });
-
-                return;
-            }
-
-            weightTemporary = splitArray.vaha.toString();
-        }
-
-        addedMark.remove();
-
-        let isMarkFound = false;
-
-        for (let index = 0; index < subjectArray.length; index++) {
-            if (
-                subjectArray[index] === subjectTemporary &&
-                markArray[index] === markTemporary &&
-                weightArray[index] === weightTemporary
-            ) {
-                subjectArray.splice(index, 1);
-                markArray.splice(index, 1);
-                weightArray.splice(index, 1);
-
-                isMarkFound = true;
-                break;
-            }
-        }
-
-        if (!isMarkFound) {
-            throw new Error(`mark to remove not found:\nsubjectTemporary: ${subjectTemporary}\nmarkTemporary: ${markTemporary}\nweightTemporary: ${weightTemporary}\nsubjectArray: ${subjectArray.toString()}\nmarkArray: ${markArray.toString()}\nweightArray: ${weightArray.toString()}`);
-        }
-
-        fixAbxNext(subjectIndex);
-
-        document.querySelectorAll("div.ui-tooltip").forEach((element) => {
-            element.remove();
-        });
-
-        refreshOrCreateAverage(true);
+    // eslint-disable-next-line no-restricted-globals
+    if (!isInstaRemoveMarksOn && (!isRemoveMarksOn || !confirm(message.removeMark))) {
+        return;
     }
 
-    if (isInstaRemoveMarksOn || (isRemoveMarksOn && confirm(message.removeMark))) {
-        removeMarkIdk();
+    let subjectTemporary: string;
+    let markTemporary: string;
+    let weightTemporary: string;
+
+    let subjectIndex = 0;
+
+    if (addedMark.getAttribute("data-clasif") === null) {
+        const predmetRadek = getParentPredmetRadek(addedMark);
+        const cphmain = document.querySelector("#cphmain_DivBySubject")!.querySelectorAll("div.predmet-radek:is([id])");
+
+        subjectIndex = Array.from(cphmain).indexOf(predmetRadek);
+
+        subjectTemporary = allSubjects[subjectIndex]!;
+        markTemporary = isSubjectWithPoints(subjectTemporary)
+            ? `${addedMark
+                    .querySelector<HTMLElement>("div.ob")!
+                    .textContent!.trim()}/${addedMark
+                    .querySelector<HTMLElement>("div.bod")!
+                    .textContent!.trim()}`
+            : addedMark.querySelector<HTMLElement>("div.ob")!.textContent!.trim();
+        weightTemporary = addedMark.querySelector<HTMLElement>("span.w-100")!.textContent!;
+    } else {
+        const splitArray: DataClasif = JSON.parse(addedMark.getAttribute("data-clasif")!);
+
+        subjectTemporary = splitArray.nazev;
+        subjectIndex = allSubjects.indexOf(subjectTemporary);
+
+        markTemporary = isSubjectWithPoints(subjectTemporary)
+            ? `${splitArray.MarkText}/${splitArray.bodymax}`
+            : splitArray.MarkText;
+
+        if (subjectIndex === -1) {
+            throw new TypeError(`subject "${subjectTemporary}" is not in allSubjects\nallSubjects: ${allSubjects.toString()}`);
+        }
+
+        if (isNanStrict(convertMarkToNumber(splitArray.MarkText))) {
+            addedMark.remove();
+
+            fixAbxNext(subjectIndex);
+
+            const allTooltipsSelector = document.querySelectorAll("div.ui-tooltip");
+
+            allTooltipsSelector.forEach((element) => {
+                element.remove();
+            });
+
+            return;
+        }
+
+        weightTemporary = splitArray.vaha.toString();
     }
+
+    addedMark.remove();
+
+    let isMarkFound = false;
+
+    for (let index = 0; index < subjectArray.length; index++) {
+        if (
+            subjectArray[index] === subjectTemporary &&
+            markArray[index] === markTemporary &&
+            weightArray[index] === weightTemporary
+        ) {
+            subjectArray.splice(index, 1);
+            markArray.splice(index, 1);
+            weightArray.splice(index, 1);
+
+            isMarkFound = true;
+            break;
+        }
+    }
+
+    if (!isMarkFound) {
+        throw new Error(`mark to remove not found:\nsubjectTemporary: ${subjectTemporary}\nmarkTemporary: ${markTemporary}\nweightTemporary: ${weightTemporary}\nsubjectArray: ${subjectArray.toString()}\nmarkArray: ${markArray.toString()}\nweightArray: ${weightArray.toString()}`);
+    }
+
+    fixAbxNext(subjectIndex);
+
+    document.querySelectorAll("div.ui-tooltip").forEach((element) => {
+        element.remove();
+    });
+
+    refreshOrCreateAverage(true);
 }
 
 function addMarkButton() {
