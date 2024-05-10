@@ -5,7 +5,7 @@
 // @match       https://*/next/prubzna.aspx
 // @match       https://*/next/pololetni.aspx
 // @grant       GM_addStyle
-// @run-at      document-start
+// @run-at      document-end
 // @version     1.2.1
 // @author      AdamJedl
 // @homepageURL https://github.com/AdamJedl/bakalari-extension
