@@ -3,7 +3,6 @@
         "target": "ES2021",
         "module": "commonjs",
         "outDir": "dist/js",
-        "rootDir": "src",
         "noEmitOnError": true,
         "lib": ["ES2021", "DOM", "DOM.Iterable"],
 
@@ -25,5 +24,6 @@
         "esModuleInterop": true,
 
         "noUncheckedIndexedAccess": true
-    }
+    },
+    "include": ["src/*", "webpack/webpack.ts"]
 }

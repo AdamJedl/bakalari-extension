@@ -1,11 +1,9 @@
 {
     "manifest_version": 2,
-
     "name": "__MSG_extension_name__",
     "description": "__MSG_extension_description__",
     "version": "1.2.1",
     "default_locale": "en",
-    
     "content_scripts": [
         {
             "matches": ["https://*/next/prubzna.aspx"],
@@ -18,9 +16,5 @@
             "js": ["js/content_script_2.js"],
             "run_at": "document_end"
         }
-    ],
-
-    "permissions": [
-        "storage"
     ]
 }

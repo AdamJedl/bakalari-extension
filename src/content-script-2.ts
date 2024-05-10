@@ -5,7 +5,7 @@ const clone: Node = document
 
 document.querySelector("#cphmain_divZnamky > table > tbody")?.append(clone);
 
-const nameOfLastSubjectName: unknown = document.querySelector(
+const nameOfLastSubjectName = document.querySelector(
     "#cphmain_divZnamky > table > tbody"
 )?.lastElementChild?.firstElementChild;
 
@@ -15,6 +15,7 @@ if (nameOfLastSubjectName instanceof HTMLElement) {
     nameOfLastSubjectName.style.paddingBottom = "0px";
 } else {
     console.error(
+        // eslint-disable-next-line quotes
         `"#cphmain_divZnamky > table > tbody".lastElementChild.firstElementChild is null | undefined`
     );
 }
@@ -71,7 +72,7 @@ while (true) {
 
     overallAverageSelector!.textContent = (
         Math.round((sum / count + Number.EPSILON) * 100) / 100
-    ).toString();
+    ).toFixed(2);
     overallAverageSelector!.style.fontSize = "22px";
 
     index++;

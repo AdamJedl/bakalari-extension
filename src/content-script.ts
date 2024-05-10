@@ -64,7 +64,7 @@ const message =
 
 let isResizeNeeded = false;
 
-let isSelectedSubjectProgramovani = false;
+let isSelectedSubjectWithPoints = false;
 
 let isSubjectMarkWorseThan3Left = false;
 let isSubjectMarkWorseThan3Right = false;
@@ -139,9 +139,9 @@ function convertMarkToNumber(mark: string ) {
 }
 
 function getpredmetRadekFromIndex(index: number) {
-    const cphmain = document.querySelector("#cphmain_DivBySubject")!.querySelectorAll("div.predmet-radek:is([id])");
-
-    const temporary = cphmain[index];
+    const temporary = document.querySelectorAll(
+        "#cphmain_DivBySubject div.predmet-radek:is([id])"
+    )[index];
 
     if (temporary === undefined) {
         throw new Error(`predmetRadek with index ${index} doesn't exist`);
@@ -151,12 +151,14 @@ function getpredmetRadekFromIndex(index: number) {
 }
 
 function fixAbxNext(index: number) {
-    const divZnamkyDiv = getpredmetRadekFromIndex(index).querySelectorAll(
-        `div.bx-wrapper:nth-child(2) > div.bx-viewport:nth-child(1) > div.znamky > div`
+    const predmetRadek = getpredmetRadekFromIndex(index);
+
+    const divZnamkyDiv = predmetRadek.querySelectorAll(
+        "div.bx-wrapper:nth-child(2) > div.bx-viewport:nth-child(1) > div.znamky > div"
     );
 
-    const aBxNextSelector = getpredmetRadekFromIndex(index).querySelector(
-        `div.bx-wrapper:nth-child(2) > div.bx-controls.bx-has-controls-direction:nth-child(2) > div.bx-controls-direction > a.bx-next:nth-child(2)`
+    const aBxNextSelector = predmetRadek.querySelector(
+        "div.bx-wrapper:nth-child(2) > div.bx-controls.bx-has-controls-direction:nth-child(2) > div.bx-controls-direction > a.bx-next:nth-child(2)"
     );
 
     if (divZnamkyDiv.length <= 1) {
@@ -165,7 +167,7 @@ function fixAbxNext(index: number) {
 
     const isMarksWidthBiggerThanViewport =
         divZnamkyDiv.length * divZnamkyDiv[0]!.clientWidth >
-        getpredmetRadekFromIndex(index).querySelector(`div.bx-wrapper > div.bx-viewport`)!.clientWidth;
+        predmetRadek.querySelector("div.bx-wrapper > div.bx-viewport")!.clientWidth;
 
     if (
         (!isMarksWidthBiggerThanViewport && !aBxNextSelector!.classList.contains("disabled")) ||
@@ -183,7 +185,7 @@ function isSubjectWithPoints(subject: string): boolean {
 
 function convertPercentageToAverage(percentage: number, markPercentage: readonly number[]): number {
 
-    if (markPercentage[4]) {
+    if (markPercentage[4] === 1) {
         if (Number.isNaN(percentage)) {
             return Number.NaN;
         }
@@ -220,6 +222,7 @@ function convertPercentageToAverage(percentage: number, markPercentage: readonly
     return 5;
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 function headerInnerHTML(string1: string, string2: string, title1: string, title2: string) {
     return `<div id="h2OverallAverage" style="padding-left: 14px; color: black; padding-bottom: 20px;">
                 <h2 title="${title1}" style="color: black;margin-right: 140px;font-size: 1.5em;width: 60px;">${string1}</h2>
@@ -227,7 +230,7 @@ function headerInnerHTML(string1: string, string2: string, title1: string, title
             </div>`;
 }
 
-function refreshOrCreateAverage(addedMarkOn: boolean) {
+function refreshOrCreateAverage(isAddedMarkOn: boolean) {
 
     isSubjectMarkWorseThan3Left = false;
     isSubjectMarkWorseThan3Right = false;
@@ -235,7 +238,7 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
     let sumLeft = 0;
 
     const textBelowSubject = document.querySelectorAll(
-        `div.info-text > ${addedMarkOn ? "h2:nth-child(1)" : "span.fl:nth-child(1)"}`
+        `div.info-text > ${isAddedMarkOn ? "h2:nth-child(1)" : "span.fl:nth-child(1)"}`
     );
 
     let numberOfValidTextsBelowSubject = 0;
@@ -249,13 +252,15 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
                 continue;
             }
 
+            const weightNumber = Number(convertMarkToNumber(weightArray[index]!));
             if (isSubjectWithPoints(element)) {
-                sum += Number(convertMarkToNumber(markArray[index]!).split("/")[0]!) * Number(convertMarkToNumber(weightArray[index]!));
-                quantity += Number(convertMarkToNumber(markArray[index]!).split("/")[1]!) * Number(convertMarkToNumber(weightArray[index]!));
+                const mark = convertMarkToNumber(markArray[index]!).split("/");
+                sum += Number(mark[0]!) * weightNumber;
+                quantity += Number(mark[1]!) * weightNumber;
 
             } else {
-                sum += Number(convertMarkToNumber(markArray[index]!)) * Number(convertMarkToNumber(weightArray[index]!));
-                quantity += Number(convertMarkToNumber(weightArray[index]!));
+                sum += Number(convertMarkToNumber(markArray[index]!)) * weightNumber;
+                quantity += weightNumber;
             }
         }
 
@@ -269,30 +274,28 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
             if (allSubject === "Databáze") {
                 markPercentage = [88, 76, 64, 51, 1];
             } else if (allSubject === "Matematika") {
-                markPercentage = [85, 67, 49, 33, 0];
+                markPercentage = [86, 69, 50, 33, 1];
             } else {
                 markPercentage = [83, 67, 50, 33, 1];
             }
 
+            const average = convertPercentageToAverage(percentage, markPercentage);
+
             // eslint-disable-next-line no-unsanitized/property
             textBelowSubject[y]!.outerHTML = `<h2 title="${
                 message.percentage
-            }: ${percentage}% (${convertPercentageToAverage(
-                percentage, markPercentage
-            )})" class="ext-h2">${message.percentage}: ${(
-                Math.round((percentage + Number.EPSILON) * 100_000) / 100_000
-            ).toFixed(2)}% (${convertPercentageToAverage(percentage, markPercentage)})</h2>`;
+            }: ${percentage}% (${average})" class="ext-h2">${message.percentage}: ${(
+                Math.round((percentage + Number.EPSILON) * 100) / 100
+            ).toFixed(2)}% (${average})</h2>`;
 
             if (!Number.isNaN(percentage)) {
                 numberOfValidTextsBelowSubject++;
 
-                const sumLeftTemporary = convertPercentageToAverage(percentage, markPercentage);
-
-                if (sumLeftTemporary === 4 || sumLeftTemporary === 5) {
+                if (average >= 4) {
                     isSubjectMarkWorseThan3Left = true;
                 }
 
-                sumLeft += sumLeftTemporary;
+                sumLeft += average;
             }
         } else {
             const average = sum / quantity;
@@ -339,9 +342,9 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
     console.log(`overallAverageLeft: ${overallAverageLeft}`);
     console.log(`overallAverageRight: ${overallAverageRight}`);
 
-    let headerOverallAverage;
+    let headerOverallAverage: HTMLElement;
 
-    if (addedMarkOn) {
+    if (isAddedMarkOn) {
         headerOverallAverage = document.querySelector<HTMLElement>("#headerOverallAverage")!;
     } else {
         headerOverallAverage = document.createElement("header");
@@ -355,7 +358,7 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
     headerOverallAverage.innerHTML = headerInnerHTML(
         overallAverageLeftRounded.toString(),
         subjectMark.length > 0 &&
-            !addedMarkOn &&
+            !isAddedMarkOn &&
             !isNanStrict(overallAverageRightRounded.toString())
             ? overallAverageRightRounded.toString()
             : "",
@@ -363,9 +366,9 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
         `${message.overallAverage}: ${overallAverageRight}`
     );
 
-    let headerStipendium;
+    let headerStipendium: HTMLElement;
 
-    if (addedMarkOn) {
+    if (isAddedMarkOn) {
         headerStipendium = document.querySelector<HTMLElement>("#headerStipendium")!;
     } else {
         headerStipendium = document.createElement("header");
@@ -386,6 +389,7 @@ function refreshOrCreateAverage(addedMarkOn: boolean) {
     );
 }
 
+// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 function getParentPredmetRadek(element: Element) {
     let parentElement = element;
     while (parentElement.className !== "predmet-radek") {
@@ -394,6 +398,7 @@ function getParentPredmetRadek(element: Element) {
     return parentElement;
 }
 
+// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 function removeMark(addedMark: Element) {
 
     // eslint-disable-next-line no-restricted-globals
@@ -443,11 +448,9 @@ function removeMark(addedMark: Element) {
 
             fixAbxNext(subjectIndex);
 
-            const allTooltipsSelector = document.querySelectorAll("div.ui-tooltip");
-
-            allTooltipsSelector.forEach((element) => {
+            for (const element of document.querySelectorAll("div.ui-tooltip")) {
                 element.remove();
-            });
+            }
 
             return;
         }
@@ -475,14 +478,22 @@ function removeMark(addedMark: Element) {
     }
 
     if (!isMarkFound) {
-        throw new Error(`mark to remove not found:\nsubjectTemporary: ${subjectTemporary}\nmarkTemporary: ${markTemporary}\nweightTemporary: ${weightTemporary}\nsubjectArray: ${subjectArray.toString()}\nmarkArray: ${markArray.toString()}\nweightArray: ${weightArray.toString()}`);
+        throw new Error(
+            `mark to remove not found:
+subjectTemporary: ${subjectTemporary}
+markTemporary: ${markTemporary}
+weightTemporary: ${weightTemporary}
+subjectArray: ${subjectArray.toString()}
+markArray: ${markArray.toString()}
+weightArray: ${weightArray.toString()}`
+        );
     }
 
     fixAbxNext(subjectIndex);
 
-    document.querySelectorAll("div.ui-tooltip").forEach((element) => {
+    for (const element of document.querySelectorAll("div.ui-tooltip")) {
         element.remove();
-    });
+    }
 
     refreshOrCreateAverage(true);
 }
@@ -498,13 +509,14 @@ function addMarkButton() {
 
     let alertText = "";
 
-    if (isSelectedSubjectProgramovani) {
+    if (isSelectedSubjectWithPoints) {
         if (isNanStrict(convertMarkToNumber(markTemporary))) {
             alertText += message.pointsAreInvalid;
         }
         if (isNanStrict(convertMarkToNumber(maxPointsTemporary))) {
             alertText += message.maxPointsAreInvalid;
         }
+    // eslint-disable-next-line sonarjs/elseif-without-else
     } else if (isNanStrict(convertMarkToNumber(markTemporary))) {
         alertText += message.markIsInvalid;
     }
@@ -520,22 +532,30 @@ function addMarkButton() {
 
     subjectArray.push(subjectTemporary);
     markArray.push(
-        isSelectedSubjectProgramovani ? `${markTemporary}/${maxPointsTemporary}` : markTemporary
+        isSelectedSubjectWithPoints ? `${markTemporary}/${maxPointsTemporary}` : markTemporary
     );
     weightArray.push(weightTemporary);
 
     const cphmain = document.querySelector("#cphmain_DivBySubject")!.querySelectorAll("div.predmet-radek:is([id])");
 
     const predmetRadek = cphmain[select.selectedIndex];
-    
 
-    const divPredmetRadekSelector = predmetRadek!.querySelector(`div > div > div.znamky`);
+
+    const divPredmetRadekSelector = predmetRadek!.querySelector("div > div > div.znamky");
 
     const addedMarkCreate = document.createElement("div");
     addedMarkCreate.id = "addedMark";
     divPredmetRadekSelector!.append(addedMarkCreate);
 
-    const spanStyle: string = isSelectedSubjectProgramovani
+    // eslint-disable-next-line no-nested-ternary
+    const divStyle: string = isSelectedSubjectWithPoints && areHugeMarksOn && isHideWeightFromPointsOn
+        ? 'style="height: 30px; margin-top: -15px; font-size: 25px; line-height: 30px;"'
+        : isSelectedSubjectWithPoints && isHideWeightFromPointsOn
+            ? 'style="height: 30px; margin-top: -15px; font-size: 9px; line-height: 50px;"'
+            : "";
+
+    // eslint-disable-next-line no-nested-ternary
+    const spanStyle: string = isSelectedSubjectWithPoints
         ? isHideWeightFromPointsOn
             ? 'style="visibility: hidden;"'
             : ""
@@ -544,23 +564,21 @@ function addMarkButton() {
           : "";
 
     // eslint-disable-next-line no-unsanitized/property
-    document.querySelector(
-        "#addedMark"
-    )!.outerHTML = `<div class="znamka-v tooltip-bubble addedMark" style="float: left; list-style: none; position: relative; width: 56px; background-color: #ffa50069;" id="addedMark">
-                        <div class="cislovka  obrovsky" id="obrovsky">
-                            <div class="ob">${markTemporary}</div>
-                        </div>
-                        <div class="bod" ${isSelectedSubjectProgramovani && areHugeMarksOn && isHideWeightFromPointsOn ? 'style="height: 30px; margin-top: -15px; font-size: 25px; line-height: 30px;"' : isSelectedSubjectProgramovani && isHideWeightFromPointsOn ? 'style="height: 30px; margin-top: -15px; font-size: 9px; line-height: 50px;"' : ""}>${isSelectedSubjectProgramovani ? maxPointsTemporary : ""}</div>
-                        <div class="dodatek" ${areHugeMarksOn && !isSelectedSubjectProgramovani ? 'style="height: 42px;"' : ""}>
-                            <span class="w-100 d-inline-block" ${spanStyle}>${weightTemporary}</span>
-                        </div>
-                    </div>`;
+    document.querySelector("#addedMark")!.outerHTML =
+        `<div class="znamka-v tooltip-bubble addedMark" style="float: left; list-style: none; position: relative; width: 56px; background-color: #ffa50069;" id="addedMark">
+            <div class="cislovka obrovsky" id="obrovsky">
+                <div class="ob">${markTemporary}</div>
+            </div>
+            <div class="bod" ${divStyle}>${isSelectedSubjectWithPoints ? maxPointsTemporary : ""}</div>
+            <div class="dodatek" ${areHugeMarksOn && !isSelectedSubjectWithPoints ? 'style="height: 42px;"' : ""}>
+                <span class="w-100 d-inline-block" ${spanStyle}>${weightTemporary}</span>
+            </div>
+        </div>`;
 
     document.querySelector("#addedMark")!.addEventListener(
         "click",
-        function () {
-            removeMark(this);
-        },
+        // eslint-disable-next-line func-names, @typescript-eslint/no-invalid-this
+        function () {removeMark(this);},
         false
     );
 
@@ -592,13 +610,13 @@ function fixAllAbxNext() {
 }
 
 function wideModeButton() {
-  
+
     const btWideModeSelector = document.querySelector<HTMLElement>("#btWideMode");
 
     if (isWideModeOn) {
         document
             .querySelector("div#obsah._loadingContainer > div")!
-            .setAttribute("style", "max-width: 1000px");
+            .setAttribute("style", "max-width: 1100px");
 
         if (btWideModeSelector) {
             btWideModeSelector.style.cssText += "background: #fff; color: #00A2E2;";
@@ -634,26 +652,27 @@ function hideWeightFromMarksWithPoints() {
         }
 
         const cphmain = document.querySelector("#cphmain_DivBySubject")!.querySelectorAll("div.predmet-radek:is([id])");
-        const predmetRadek = getParentPredmetRadek(element);
 
-        const index = Array.from(cphmain).indexOf(predmetRadek);
+        const index = Array.from(cphmain).indexOf(getParentPredmetRadek(element));
 
-        let allMarksOf1SubjectWeight = getpredmetRadekFromIndex(index).querySelectorAll<HTMLElement>(
-            `div.bx-wrapper:nth-child(2) > div.bx-viewport:nth-child(1) > div.znamky > div.znamka-v.tooltip-bubble > div.dodatek > span.w-100`
+        const predmetRadek = getpredmetRadekFromIndex(index);
+
+        let allMarksOf1SubjectWeight = predmetRadek.querySelectorAll<HTMLElement>(
+            "div.bx-wrapper:nth-child(2) > div.bx-viewport:nth-child(1) > div.znamky > div.znamka-v.tooltip-bubble > div.dodatek > span.w-100"
         );
-        let allMarksOf1SubjectPoints = getpredmetRadekFromIndex(index).querySelectorAll<HTMLElement>(
-            `div.bx-wrapper:nth-child(2) > div.bx-viewport:nth-child(1) > div.znamky > div.znamka-v.tooltip-bubble > div.bod`
+        let allMarksOf1SubjectPoints = predmetRadek.querySelectorAll<HTMLElement>(
+            "div.bx-wrapper:nth-child(2) > div.bx-viewport:nth-child(1) > div.znamky > div.znamka-v.tooltip-bubble > div.bod"
         );
 
         if (allMarksOf1SubjectWeight.length === 0) {
-            allMarksOf1SubjectWeight = getpredmetRadekFromIndex(index).querySelectorAll(
-                `div.znamky > div.znamka-v.tooltip-bubble > div.dodatek > span.w-100`
+            allMarksOf1SubjectWeight = predmetRadek.querySelectorAll(
+                "div.znamky > div.znamka-v.tooltip-bubble > div.dodatek > span.w-100"
             );
         }
 
         if (allMarksOf1SubjectPoints.length === 0) {
-            allMarksOf1SubjectPoints = getpredmetRadekFromIndex(index).querySelectorAll(
-                `div.znamky > div.znamka-v.tooltip-bubble > div.bod`
+            allMarksOf1SubjectPoints = predmetRadek.querySelectorAll(
+                "div.znamky > div.znamka-v.tooltip-bubble > div.bod"
             );
         }
 
@@ -716,7 +735,7 @@ function hugeMarksButton() {
     );
 
     if (areHugeMarksOn) {
-      
+
         const marksDivNumeralHuge = document.querySelectorAll(
             "div.znamka-v > div.obrovsky"
         );
@@ -743,7 +762,7 @@ function hugeMarksButton() {
         }
 
     } else {
-      
+
         const marksDivNumeral = document.querySelectorAll<HTMLElement>(
             "div.znamka-v > div.maly, div.znamka-v > div.stredni, div.znamka-v > div.velky, div.znamka-v > div.obrovsky"
         );
@@ -793,11 +812,12 @@ function hugeMarksButton() {
         hideWeightFromMarksWithPoints();
     }
 
-    try {
-        document.querySelector<HTMLElement>("#btHugeMarks")!.style.cssText += areHugeMarksOn
+    const btHugeMarks = document.querySelector<HTMLElement>("#btHugeMarks");
+    if (btHugeMarks !== null) {
+        btHugeMarks.style.cssText += areHugeMarksOn
             ? "background: #00a2e2; color: #ffff;"
             : "background: #fff; color: #00A2E2;";
-    } catch {}
+    }
 
     localStorage.setItem("hugeMarksOn", areHugeMarksOn.toString());
 }
@@ -819,7 +839,7 @@ function settingsMenu() {
 }
 
 function createBt(
-    On: boolean,
+    isOn: boolean,
     value: string,
     id: string,
     clickFunction: () => void,
@@ -829,11 +849,13 @@ function createBt(
     btName.value = value;
     btName.id = id;
     btName.type = "button";
-    On ? btName.classList.add("ext-bt") : btName.classList.add("ext-disabled", "ext-bt");
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    isOn ? btName.classList.add("ext-bt") : btName.classList.add("ext-disabled", "ext-bt");
     btName.addEventListener("click", clickFunction, false);
     parentElement!.append(btName);
 }
 
+// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 function createElement(type: string, id: string, parentElement: Element | null, style = "") {
     const elementCreate = document.createElement(type);
     elementCreate.id = id;
@@ -888,6 +910,7 @@ function createHeaderAndDiv(
 function removeMarkButton() {
     isRemoveMarksOn = !isRemoveMarksOn;
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     isRemoveMarksOn
         ? document.querySelector("#btRemoveMarks")!.classList.remove("ext-disabled")
         : document.querySelector("#btRemoveMarks")!.classList.add("ext-disabled");
@@ -903,6 +926,7 @@ function removeMarkButton() {
 function instaRemoveMarkButton() {
     isInstaRemoveMarksOn = !isInstaRemoveMarksOn;
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     isInstaRemoveMarksOn
         ? document.querySelector("#btInstaRemoveMarks")!.classList.remove("ext-disabled")
         : document.querySelector("#btInstaRemoveMarks")!.classList.add("ext-disabled");
@@ -922,20 +946,21 @@ function ifSelectedSubjectHavePoints() {
     const inputMaxPointsSelector = document.querySelector<HTMLInputElement>("#inputMaxPoints")!;
     const inputWeightSelector = document.querySelector<HTMLInputElement>("#inputWeight")!;
 
-    const bool = isSubjectWithPoints(subjectTemporary);
+    const isSubjectWithPointsBool = isSubjectWithPoints(subjectTemporary);
 
-    inputMarkSelector.placeholder = bool
+    inputMarkSelector.placeholder = isSubjectWithPointsBool
         ? message.inputMarkPlaceholderPoints
         : message.inputMarkPlaceholder;
 
     inputMaxPointsSelector.placeholder = message.inputWeightPlaceholderPoints!;
-    inputMaxPointsSelector.style.display = bool ? "" : "none";
+    inputMaxPointsSelector.style.display = isSubjectWithPointsBool ? "" : "none";
 
     inputWeightSelector.placeholder = message.inputWeightPlaceholder!;
 
-    isSelectedSubjectProgramovani = bool;
+    isSelectedSubjectWithPoints = isSubjectWithPointsBool;
 }
 
+// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 function changeLanguage(bt: HTMLInputElement) {
     if (bt.value === "CS") {
         document.querySelector("#btCs")!.classList.remove("ext-disabled");
@@ -1028,6 +1053,7 @@ function createSettingsMenu() {
         language === "cs",
         "CS",
         "btCs",
+        // eslint-disable-next-line func-names, @typescript-eslint/no-invalid-this
         function () {changeLanguage(this);},
         document.querySelector("#settingsMenuDiv")
     );
@@ -1038,6 +1064,7 @@ function createSettingsMenu() {
         language !== "cs",
         "EN",
         "btEn",
+        // eslint-disable-next-line func-names, @typescript-eslint/no-invalid-this
         function () {changeLanguage(this);},
         document.querySelector("#settingsMenuDiv")
     );
@@ -1124,12 +1151,9 @@ document.querySelector<HTMLElement>("#predmety")!.style.paddingBottom = "20px";
 const allMarks = document.querySelectorAll<HTMLElement>("div.znamka-v.tooltip-bubble");
 
 for (const allMark of allMarks) {
-    if (allMark.classList.contains("addedMark")) {
-        continue;
-    }
-
     allMark.addEventListener(
         "click",
+        // eslint-disable-next-line func-names, @typescript-eslint/no-invalid-this
         function () {removeMark(this);},
         false
     );
@@ -1137,6 +1161,7 @@ for (const allMark of allMarks) {
 
 document.querySelector("div.bk-menu-hide")?.addEventListener(
     "click",
+    // eslint-disable-next-line func-names
     function () {
         if (document.querySelector("div.bk-menu-hide")!.clientWidth < 150) {
             fixAllAbxNext();
@@ -1157,7 +1182,7 @@ if (
         if (element.querySelector(".dodatek > span.w-100") !== null) {
             continue
         }
-        
+
         const splitArray = element.getAttribute("data-clasif")!.split('vaha":');
         const splitArray2 = splitArray[3]!.split('MarkText":"');
 
@@ -1251,7 +1276,7 @@ for (const element of allMarksSelector) {
     const splitArrayWeight: number = splitArray.vaha;
 
     if (isSubjectWithPoints(splitArraySubject)) {
-        
+
         const splitArrayMaxPoints: number = splitArray.bodymax;
         markArray.push(`${splitArrayMark}/${splitArrayMaxPoints}`);
 
