@@ -21,7 +21,9 @@
         
         "lint": "eslint . --ext .ts",
         "lint-fix": "eslint --fix . --ext .ts",
-        "clean": "rm -rf dist dist-firefox dist-userscript"
+
+        "clean": "rm -rf dist dist-firefox dist-userscript",
+        "clean-all": "rm -rf dist dist-firefox dist-userscript node_modules package-lock.json"
     },
     "author": "AdamJedl",
     "license": "GPL-3.0",
@@ -29,8 +31,8 @@
         "@types/chrome": "^0.0.254",
         "@types/node": "^20.10.5",
         "@types/webpack": "^5.28.5",
-        "@typescript-eslint/eslint-plugin": "^6.15.0",
-        "@typescript-eslint/parser": "^6.15.0",
+        "@typescript-eslint/eslint-plugin": "^6.16.0",
+        "@typescript-eslint/parser": "^6.16.0",
         "copy-webpack-plugin": "^11.0.0",
         "css-minimizer-webpack-plugin": "^5.0.1",
         "esbuild-loader": "^4.0.2",
