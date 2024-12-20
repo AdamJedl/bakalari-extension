@@ -4,3 +4,4 @@ dist/
 dist-firefox/
 dist-userscript/
 tmp/
+release/

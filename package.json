@@ -23,7 +23,9 @@
         "lint-fix": "eslint --fix . --ext .ts",
 
         "clean": "rm -rf dist dist-firefox dist-userscript",
-        "clean-all": "rm -rf dist dist-firefox dist-userscript node_modules package-lock.json bun.lockb yarn.lock"
+        "clean-all": "rm -rf dist dist-firefox dist-userscript node_modules package-lock.json bun.lockb yarn.lock",
+
+        "release": "bun run build-all && ./release.js"
     },
     "author": "AdamJedl",
     "license": "GPL-3.0",
