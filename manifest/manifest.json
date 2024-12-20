@@ -6,16 +6,21 @@
     "default_locale": "en",
     "content_scripts": [
         {
-            "matches": ["https://*/next/prubzna.aspx"],
+            "matches": ["https://*/next/prubzna.aspx", "https://*/bakaweb/next/prubzna.aspx"],
             "js": ["js/content_script.js"],
             "css": ["content.css"],
             "run_at": "document_end"
         },
         {
-            "matches": ["https://*/next/pololetni.aspx"],
+            "matches": ["https://*/next/pololetni.aspx", "https://*/bakaweb/next/pololetni.aspx"],
             "js": ["js/content_script_2.js"],
             "run_at": "document_end"
         }
     ],
-    "host_permissions": ["https://*/next/prubzna.aspx", "https://*/next/pololetni.aspx"]
+    "host_permissions": [
+        "https://*/next/prubzna.aspx",
+        "https://*/bakaweb/next/prubzna.aspx",
+        "https://*/next/pololetni.aspx",
+        "https://*/bakaweb/next/pololetni.aspx"
+    ]
 }
