@@ -5,45 +5,38 @@
     "scripts": {
         "watch": "webpack --config webpack/webpack.ts --env=mode=development --env=browser=chrome --watch",
         "watch-firefox": "webpack --config webpack/webpack.ts --env=mode=development --env=browser=firefox --watch",
-
         "build": "webpack --config webpack/webpack.ts --env=mode=production --env=browser=chrome",
         "build-dev": "webpack --config webpack/webpack.ts --env=mode=development --env=browser=chrome",
-
         "build-firefox": "webpack --config webpack/webpack.ts --env=mode=production --env=browser=firefox",
         "build-firefox-dev": "webpack --config webpack/webpack.ts --env=mode=development --env=browser=firefox",
-
         "build-all": "webpack --config webpack/webpack.ts --env=mode=production --env=all && cp -r dist/_locales dist/js dist/content.css dist-firefox && python userscript-build.py",
         "build-all-dev": "webpack --config webpack/webpack.ts --env=mode=development --env=all && cp -r dist/_locales dist/js dist/content.css dist-firefox && python userscript-build.py",
-
         "style": "prettier --write \"src/**/*.{ts,tsx}\"",
         "style-json": "prettier --write \"{.prettierrc, package.json, package-lock.json, tsconfig.json}\"",
         "style-webpack": "prettier --write \"webpack/*.ts\"",
-
         "lint": "eslint . --ext .ts",
         "lint-fix": "eslint --fix . --ext .ts",
-
         "clean": "rm -rf dist dist-firefox dist-userscript",
         "clean-all": "rm -rf dist dist-firefox dist-userscript node_modules package-lock.json bun.lockb yarn.lock",
-
         "release": "bun run build-all && ./release.js"
     },
     "author": "AdamJedl",
     "license": "GPL-3.0",
     "devDependencies": {
-        "@swc-node/register": "^1.9.1",
-        "@swc/core": "^1.5.3",
-        "@types/chrome": "^0.0.267",
-        "@types/node": "^20.12.10",
+        "@swc-node/register": "^1.10.9",
+        "@swc/core": "^1.10.1",
+        "@types/chrome": "^0.0.287",
+        "@types/node": "^22.10.2",
         "@types/webpack": "^5.28.5",
         "copy-webpack-plugin": "^12.0.2",
-        "css-minimizer-webpack-plugin": "^6.0.0",
-        "eslint-config-hardcore": "^45.6.0",
+        "css-minimizer-webpack-plugin": "^7.0.0",
+        "eslint-config-hardcore": "^47.0.1",
         "json-minimizer-webpack-plugin": "^5.0.0",
-        "mini-css-extract-plugin": "^2.9.0",
-        "prettier": "^3.2.5",
+        "mini-css-extract-plugin": "^2.9.2",
+        "prettier": "^3.4.2",
         "swc-loader": "^0.2.6",
-        "typescript": "^5.4.5",
-        "webpack": "^5.91.0",
-        "webpack-cli": "^5.1.4"
+        "typescript": "^5.7.2",
+        "webpack": "^5.97.1",
+        "webpack-cli": "^6.0.1"
     }
 }

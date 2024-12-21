@@ -67,6 +67,7 @@
 
         "regexp/require-unicode-sets-regexp": "off",
 
-        "padding-line-between-statements": "off"
+        "padding-line-between-statements": "off",
+        "@stylistic/padding-line-between-statements": "off"
     }
 }
