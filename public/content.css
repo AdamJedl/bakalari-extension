@@ -2,6 +2,7 @@
 
 .ext-bt {
     margin-left: 10px;
+    margin-bottom: 5px;
     cursor: pointer;
     text-align: center;
     text-decoration: none;
@@ -21,6 +22,8 @@
     color: black;
     padding: 2px 0px 0px 0px;
     width: 210px;
+    z-index: 1;
+    position: absolute;
 }
 
 .ext-disabled {
@@ -30,4 +33,14 @@
 
 .ui-tooltip-content {
     font-size: 15px;
+}
+
+.info-text,
+._subject_detail {
+    overflow: visible !important;
+}
+
+#settingsMenuDiv {
+    display: flex;
+    flex-wrap: wrap;
 }

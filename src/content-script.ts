@@ -4,7 +4,6 @@ if (language !== "cs") {
     language = "en";
 }
 
-
 const message =
     language === "cs"
         ? {
@@ -61,9 +60,6 @@ const message =
               wideMode: "Wide mode"
           };
 
-
-let isResizeNeeded = false;
-
 let isSelectedSubjectWithPoints = false;
 
 let isSubjectMarkWorseThan3Left = false;
@@ -86,15 +82,13 @@ const allSubjects: string[] = [];
 
 const subjectsWithPoints: string[] = [];
 
-
 interface DataClasif {
-    bodymax: number,
+    bodymax: number;
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    MarkText: string,
-    nazev: string,
-    vaha: number
+    MarkText: string;
+    nazev: string;
+    vaha: number;
 }
-
 
 function stipendium(prumer: number, typeOfAverage: string) {
     if (
@@ -129,7 +123,7 @@ function isNanStrict(a: string) {
     return Number.isNaN(Number(a)) || a.trim() === "";
 }
 
-function convertMarkToNumber(mark: string ) {
+function convertMarkToNumber(mark: string) {
     const markTemporary: string = mark.replaceAll(/(?<!e)-/giu, ".5");
     if (markTemporary.startsWith(".5") && markTemporary.length > 2) {
         return `-${markTemporary.slice(2)}`;
@@ -139,9 +133,9 @@ function convertMarkToNumber(mark: string ) {
 }
 
 function getpredmetRadekFromIndex(index: number) {
-    const temporary = document.querySelectorAll(
-        "#cphmain_DivBySubject div.predmet-radek:is([id])"
-    )[index];
+    const temporary = document.querySelectorAll("#cphmain_DivBySubject div.predmet-radek:is([id])")[
+        index
+    ];
 
     if (temporary === undefined) {
         throw new Error(`predmetRadek with index ${index} doesn't exist`);
@@ -153,30 +147,18 @@ function getpredmetRadekFromIndex(index: number) {
 function fixAbxNext(index: number) {
     const predmetRadek = getpredmetRadekFromIndex(index);
 
-    const divZnamkyDiv = predmetRadek.querySelectorAll(
-        "div.bx-wrapper:nth-child(2) > div.bx-viewport:nth-child(1) > div.znamky > div"
+    const divZnamky = predmetRadek.querySelector(
+        "div.bx-wrapper:nth-child(2) > div.bx-viewport:nth-child(1) > div.znamky"
     );
 
-    const aBxNextSelector = predmetRadek.querySelector(
-        "div.bx-wrapper:nth-child(2) > div.bx-controls.bx-has-controls-direction:nth-child(2) > div.bx-controls-direction > a.bx-next:nth-child(2)"
-    );
-
-    if (divZnamkyDiv.length <= 1) {
-        return;
+    if (divZnamky?.childElementCount === 0) {
+        createElement("div", `fakeMark${index}`, divZnamky, "display: none;");
+        // eslint-disable-next-line sonarjs/elseif-without-else
+    } else if (divZnamky?.childElementCount === 2) {
+        document.querySelector(`#fakeMark${index}`)?.remove();
     }
 
-    const isMarksWidthBiggerThanViewport =
-        divZnamkyDiv.length * divZnamkyDiv[0]!.clientWidth >
-        predmetRadek.querySelector("div.bx-wrapper > div.bx-viewport")!.clientWidth;
-
-    if (
-        (!isMarksWidthBiggerThanViewport && !aBxNextSelector!.classList.contains("disabled")) ||
-        isMarksWidthBiggerThanViewport
-    ) {
-        isResizeNeeded = true;
-
-        window.dispatchEvent(new Event("resize"));
-    }
+    window.dispatchEvent(new Event("resize"));
 }
 
 function isSubjectWithPoints(subject: string): boolean {
@@ -184,7 +166,6 @@ function isSubjectWithPoints(subject: string): boolean {
 }
 
 function convertPercentageToAverage(percentage: number, markPercentage: readonly number[]): number {
-
     if (markPercentage[4] === 1) {
         if (Number.isNaN(percentage)) {
             return Number.NaN;
@@ -231,7 +212,6 @@ function headerInnerHTML(string1: string, string2: string, title1: string, title
 }
 
 function refreshOrCreateAverage(isAddedMarkOn: boolean) {
-
     isSubjectMarkWorseThan3Left = false;
     isSubjectMarkWorseThan3Right = false;
 
@@ -257,7 +237,6 @@ function refreshOrCreateAverage(isAddedMarkOn: boolean) {
                 const mark = convertMarkToNumber(markArray[index]!).split("/");
                 sum += Number(mark[0]!) * weightNumber;
                 quantity += Number(mark[1]!) * weightNumber;
-
             } else {
                 sum += Number(convertMarkToNumber(markArray[index]!)) * weightNumber;
                 quantity += weightNumber;
@@ -337,7 +316,8 @@ function refreshOrCreateAverage(isAddedMarkOn: boolean) {
     const overallAverageRight = sumRight / allSubjects.length;
 
     const overallAverageLeftRounded = Math.round((overallAverageLeft + Number.EPSILON) * 100) / 100;
-    const overallAverageRightRounded = Math.round((overallAverageRight + Number.EPSILON) * 100) / 100;
+    const overallAverageRightRounded =
+        Math.round((overallAverageRight + Number.EPSILON) * 100) / 100;
 
     console.log(`overallAverageLeft: ${overallAverageLeft}`);
     console.log(`overallAverageRight: ${overallAverageRight}`);
@@ -352,7 +332,10 @@ function refreshOrCreateAverage(isAddedMarkOn: boolean) {
         document.querySelector("main")!.append(headerOverallAverage);
     }
 
-    headerOverallAverage.setAttribute("style", "padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;");
+    headerOverallAverage.setAttribute(
+        "style",
+        "padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;"
+    );
 
     // eslint-disable-next-line no-unsanitized/property
     headerOverallAverage.innerHTML = headerInnerHTML(
@@ -376,7 +359,10 @@ function refreshOrCreateAverage(isAddedMarkOn: boolean) {
         document.querySelector("main")!.append(headerStipendium);
     }
 
-    headerStipendium.setAttribute("style", "padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;");
+    headerStipendium.setAttribute(
+        "style",
+        "padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;"
+    );
 
     // eslint-disable-next-line no-unsanitized/property
     headerStipendium.innerHTML = headerInnerHTML(
@@ -400,7 +386,6 @@ function getParentPredmetRadek(element: Element) {
 
 // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 function removeMark(addedMark: Element) {
-
     // eslint-disable-next-line no-restricted-globals
     if (!isInstaRemoveMarksOn && (!isRemoveMarksOn || !confirm(message.removeMark))) {
         return;
@@ -416,17 +401,17 @@ function removeMark(addedMark: Element) {
 
     if (addedMarkDataClasif === null) {
         const predmetRadek = getParentPredmetRadek(addedMark);
-        const cphmain = document.querySelector("#cphmain_DivBySubject")!.querySelectorAll("div.predmet-radek:is([id])");
+        const cphmain = document
+            .querySelector("#cphmain_DivBySubject")!
+            .querySelectorAll("div.predmet-radek:is([id])");
 
         subjectIndex = Array.from(cphmain).indexOf(predmetRadek);
 
         subjectTemporary = allSubjects[subjectIndex]!;
         markTemporary = isSubjectWithPoints(subjectTemporary)
-            ? `${addedMark
-                    .querySelector<HTMLElement>("div.ob")!
-                    .textContent!.trim()}/${addedMark
-                    .querySelector<HTMLElement>("div.bod")!
-                    .textContent!.trim()}`
+            ? `${addedMark.querySelector<HTMLElement>("div.ob")!.textContent!.trim()}/${addedMark
+                  .querySelector<HTMLElement>("div.bod")!
+                  .textContent!.trim()}`
             : addedMark.querySelector<HTMLElement>("div.ob")!.textContent!.trim();
         weightTemporary = addedMark.querySelector<HTMLElement>("span.w-100")!.textContent!;
     } else {
@@ -440,7 +425,9 @@ function removeMark(addedMark: Element) {
             : splitArray.MarkText;
 
         if (subjectIndex === -1) {
-            throw new TypeError(`subject "${subjectTemporary}" is not in allSubjects\nallSubjects: ${allSubjects.toString()}`);
+            throw new TypeError(
+                `subject "${subjectTemporary}" is not in allSubjects\nallSubjects: ${allSubjects.toString()}`
+            );
         }
 
         if (isNanStrict(convertMarkToNumber(splitArray.MarkText))) {
@@ -504,7 +491,8 @@ function addMarkButton() {
 
     const markTemporary: string = document.querySelector<HTMLInputElement>("#inputMark")!.value;
 
-    const maxPointsTemporary: string = document.querySelector<HTMLInputElement>("#inputMaxPoints")!.value;
+    const maxPointsTemporary: string =
+        document.querySelector<HTMLInputElement>("#inputMaxPoints")!.value;
     const weightTemporary: string = document.querySelector<HTMLInputElement>("#inputWeight")!.value;
 
     let alertText = "";
@@ -516,7 +504,7 @@ function addMarkButton() {
         if (isNanStrict(convertMarkToNumber(maxPointsTemporary))) {
             alertText += message.maxPointsAreInvalid;
         }
-    // eslint-disable-next-line sonarjs/elseif-without-else
+        // eslint-disable-next-line sonarjs/elseif-without-else
     } else if (isNanStrict(convertMarkToNumber(markTemporary))) {
         alertText += message.markIsInvalid;
     }
@@ -536,10 +524,11 @@ function addMarkButton() {
     );
     weightArray.push(weightTemporary);
 
-    const cphmain = document.querySelector("#cphmain_DivBySubject")!.querySelectorAll("div.predmet-radek:is([id])");
+    const cphmain = document
+        .querySelector("#cphmain_DivBySubject")!
+        .querySelectorAll("div.predmet-radek:is([id])");
 
     const predmetRadek = cphmain[select.selectedIndex];
-
 
     const divPredmetRadekSelector = predmetRadek!.querySelector("div > div > div.znamky");
 
@@ -547,12 +536,13 @@ function addMarkButton() {
     addedMarkCreate.id = "addedMark";
     divPredmetRadekSelector!.append(addedMarkCreate);
 
-    // eslint-disable-next-line no-nested-ternary
-    const divStyle: string = isSelectedSubjectWithPoints && areHugeMarksOn && isHideWeightFromPointsOn
-        ? 'style="height: 30px; margin-top: -15px; font-size: 25px; line-height: 30px;"'
-        : isSelectedSubjectWithPoints && isHideWeightFromPointsOn
-            ? 'style="height: 30px; margin-top: -15px; font-size: 9px; line-height: 50px;"'
-            : "";
+    const divStyle: string =
+        // eslint-disable-next-line no-nested-ternary
+        isSelectedSubjectWithPoints && areHugeMarksOn && isHideWeightFromPointsOn
+            ? 'style="height: 30px; margin-top: -15px; font-size: 25px; line-height: 30px;"'
+            : isSelectedSubjectWithPoints && isHideWeightFromPointsOn
+              ? 'style="height: 30px; margin-top: -15px; font-size: 9px; line-height: 50px;"'
+              : "";
 
     // eslint-disable-next-line no-nested-ternary
     const spanStyle: string = isSelectedSubjectWithPoints
@@ -577,8 +567,11 @@ function addMarkButton() {
 
     document.querySelector("#addedMark")!.addEventListener(
         "click",
-        // eslint-disable-next-line func-names, @typescript-eslint/no-invalid-this
-        function () {removeMark(this);},
+        // eslint-disable-next-line func-names
+        function () {
+            // eslint-disable-next-line @typescript-eslint/no-invalid-this
+            removeMark(this);
+        },
         false
     );
 
@@ -595,22 +588,10 @@ function addMarkButton() {
 }
 
 function fixAllAbxNext() {
-    isResizeNeeded = false;
-
-    const divZnamkySelector = document.querySelectorAll("div.znamky");
-
-    for (let index = 0; index < divZnamkySelector.length; index++) {
-        fixAbxNext(index);
-
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (isResizeNeeded) {
-            return;
-        }
-    }
+    window.dispatchEvent(new Event("resize"));
 }
 
 function wideModeButton() {
-
     const btWideModeSelector = document.querySelector<HTMLElement>("#btWideMode");
 
     if (isWideModeOn) {
@@ -621,7 +602,6 @@ function wideModeButton() {
         if (btWideModeSelector) {
             btWideModeSelector.style.cssText += "background: #fff; color: #00A2E2;";
         }
-
     } else {
         document
             .querySelector("div#obsah._loadingContainer > div")!
@@ -640,18 +620,18 @@ function wideModeButton() {
 }
 
 function hideWeightFromMarksWithPoints() {
-
     const firstMarkInSubjectPoint = document.querySelectorAll(
         "div.znamka-v.tooltip-bubble:nth-child(1) > div.bod"
     );
 
     for (const element of firstMarkInSubjectPoint) {
-
         if (element.innerHTML.trim() === "") {
             continue;
         }
 
-        const cphmain = document.querySelector("#cphmain_DivBySubject")!.querySelectorAll("div.predmet-radek:is([id])");
+        const cphmain = document
+            .querySelector("#cphmain_DivBySubject")!
+            .querySelectorAll("div.predmet-radek:is([id])");
 
         const index = Array.from(cphmain).indexOf(getParentPredmetRadek(element));
 
@@ -713,13 +693,9 @@ function hideWeightFromMarksWithPoints() {
 
     if (document.querySelector("#btHideWeightFromPoints")) {
         if (isHideWeightFromPointsOn) {
-            document
-                .querySelector("#btHideWeightFromPoints")!
-                .classList.remove("ext-disabled");
+            document.querySelector("#btHideWeightFromPoints")!.classList.remove("ext-disabled");
         } else {
-            document
-                .querySelector("#btHideWeightFromPoints")!
-                .classList.add("ext-disabled");
+            document.querySelector("#btHideWeightFromPoints")!.classList.add("ext-disabled");
         }
     }
 
@@ -727,18 +703,13 @@ function hideWeightFromMarksWithPoints() {
 }
 
 function hugeMarksButton() {
-    const marksDivDodatek = document.querySelectorAll<HTMLElement>(
-        "div.znamka-v > div.dodatek"
-    );
+    const marksDivDodatek = document.querySelectorAll<HTMLElement>("div.znamka-v > div.dodatek");
     const marksDivDodatekSpan = document.querySelectorAll<HTMLElement>(
         "div.znamka-v > div.dodatek > span.w-100"
     );
 
     if (areHugeMarksOn) {
-
-        const marksDivNumeralHuge = document.querySelectorAll(
-            "div.znamka-v > div.obrovsky"
-        );
+        const marksDivNumeralHuge = document.querySelectorAll("div.znamka-v > div.obrovsky");
 
         for (const element of marksDivNumeralHuge) {
             element.classList.remove("obrovsky");
@@ -760,9 +731,7 @@ function hugeMarksButton() {
         for (const allMarksWithPoint of allMarksWithPoints) {
             allMarksWithPoint.style.lineHeight = "";
         }
-
     } else {
-
         const marksDivNumeral = document.querySelectorAll<HTMLElement>(
             "div.znamka-v > div.maly, div.znamka-v > div.stredni, div.znamka-v > div.velky, div.znamka-v > div.obrovsky"
         );
@@ -800,7 +769,7 @@ function hugeMarksButton() {
                 continue;
             }
 
-            marksDivDodatekSpan[index]!.style.cssText +=
+            marksDivDodatekSpan[index].style.cssText +=
                 "height: 20px; padding-top: 10px; font-size: 25px;";
         }
     }
@@ -826,8 +795,8 @@ function settingsMenu() {
     const headerSelector = document.querySelector<HTMLElement>("#settingsMenuHeader");
 
     headerSelector!.style.cssText = isSettingsOn
-        ? "padding-top: 0px; padding-bottom: 0px; display: none;"
-        : "padding-top: 0px; padding-bottom: 0px;";
+        ? "padding-top: 0px; padding-bottom: 0px; height: auto; display: none;"
+        : "padding-top: 0px; padding-bottom: 0px; height: auto;";
 
     document.querySelector<HTMLElement>("#btSettings")!.style.cssText += isSettingsOn
         ? "background: #fff; color: #00A2E2;"
@@ -865,19 +834,16 @@ function createElement(type: string, id: string, parentElement: Element | null, 
 }
 
 function predictorMenu() {
-    const predictorMenuHeaderSelector = document.querySelector<HTMLElement>(
-        "#predictorMenuHeader"
-    );
+    const predictorMenuHeaderSelector = document.querySelector<HTMLElement>("#predictorMenuHeader");
 
     if (isPredictorOn) {
         predictorMenuHeaderSelector!.style.cssText =
-            "padding-top: 0px; padding-bottom: 0px; display: none;";
+            "padding-top: 0px; padding-bottom: 0px; height: auto; display: none;";
         document.querySelector("#btPredictor")!.classList.add("ext-disabled");
     } else {
-        predictorMenuHeaderSelector!.style.cssText = "padding-top: 0px; padding-bottom: 0px;";
-        document
-            .querySelector("#btPredictor")!
-            .classList.remove("ext-disabled");
+        predictorMenuHeaderSelector!.style.cssText =
+            "padding-top: 0px; padding-bottom: 0px; height: auto;";
+        document.querySelector("#btPredictor")!.classList.remove("ext-disabled");
     }
 
     isPredictorOn = !isPredictorOn;
@@ -895,8 +861,8 @@ function createHeaderAndDiv(
     header.id = headerId;
 
     header.style.cssText = isOn
-        ? "padding-top: 0px; padding-bottom: 0px; "
-        : "padding-top: 0px; padding-bottom: 0px; display: none;";
+        ? "padding-top: 0px; padding-bottom: 0px; height: auto;"
+        : "padding-top: 0px; padding-bottom: 0px; height: auto; display: none;";
 
     elementAfter!.parentNode!.insertBefore(header, elementAfter);
 
@@ -918,7 +884,6 @@ function removeMarkButton() {
     localStorage.setItem("removeMarkOn", isRemoveMarksOn.toString());
 
     if (!isRemoveMarksOn && isInstaRemoveMarksOn) {
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define
         instaRemoveMarkButton();
     }
 }
@@ -968,7 +933,9 @@ function changeLanguage(bt: HTMLInputElement) {
 
         localStorage.setItem("language", "cs");
 
-        alert("The language change will take effect after the page is refreshed.\nZměna jazyka se projeví po znovu načtení stránky.");
+        alert(
+            "The language change will take effect after the page is refreshed.\nZměna jazyka se projeví po znovu načtení stránky."
+        );
     } else {
         document.querySelector("#btCs")!.classList.add("ext-disabled");
         document.querySelector("#btEn")!.classList.remove("ext-disabled");
@@ -990,7 +957,6 @@ function replaceTypeWithWeight() {
         );
 
         for (const element of allMarksWeight) {
-
             const markJson = element.parentElement!.parentElement!.getAttribute("data-clasif");
             if (markJson !== null) {
                 element.textContent = JSON.parse(markJson).vaha;
@@ -1002,13 +968,9 @@ function replaceTypeWithWeight() {
 
     if (document.querySelector("#btReplaceTypeWithWeight")) {
         if (isReplaceTypeWithWeightOn) {
-            document
-                .querySelector("#btReplaceTypeWithWeight")!
-                .classList.remove("ext-disabled");
+            document.querySelector("#btReplaceTypeWithWeight")!.classList.remove("ext-disabled");
         } else {
-            document
-                .querySelector("#btReplaceTypeWithWeight")!
-                .classList.add("ext-disabled");
+            document.querySelector("#btReplaceTypeWithWeight")!.classList.add("ext-disabled");
         }
     }
 
@@ -1049,24 +1011,34 @@ function createSettingsMenu() {
         document.querySelector("#settingsMenuDiv")
     );
 
+    const languageSelectorDiv = document.createElement("div");
+    document.querySelector("#settingsMenuDiv")!.append(languageSelectorDiv);
+
     createBt(
         language === "cs",
         "CS",
         "btCs",
-        // eslint-disable-next-line func-names, @typescript-eslint/no-invalid-this
-        function () {changeLanguage(this);},
-        document.querySelector("#settingsMenuDiv")
+        // eslint-disable-next-line func-names
+        function () {
+            // eslint-disable-next-line @typescript-eslint/no-invalid-this
+            changeLanguage(this);
+        },
+        languageSelectorDiv
     );
 
-    document.querySelector<HTMLElement>("#btCs")!.style.cssText += "border-radius: 16px 0px 0px 16px;";
+    document.querySelector<HTMLElement>("#btCs")!.style.cssText +=
+        "border-radius: 16px 0px 0px 16px;";
 
     createBt(
         language !== "cs",
         "EN",
         "btEn",
-        // eslint-disable-next-line func-names, @typescript-eslint/no-invalid-this
-        function () {changeLanguage(this);},
-        document.querySelector("#settingsMenuDiv")
+        // eslint-disable-next-line func-names
+        function () {
+            // eslint-disable-next-line @typescript-eslint/no-invalid-this
+            changeLanguage(this);
+        },
+        languageSelectorDiv
     );
     document.querySelector<HTMLElement>("#btEn")!.style.cssText +=
         "margin-left: 0px; border-radius: 0px 16px 16px 0px;";
@@ -1103,6 +1075,14 @@ function createPredictorMenu() {
     document
         .querySelector("#selectSubject")!
         .addEventListener("change", ifSelectedSubjectHavePoints, false);
+
+    document.querySelector("#selectSubject")!.addEventListener("touchend", (event) => {
+        const target = event.target;
+
+        if (target instanceof HTMLElement) {
+            target.click();
+        }
+    });
 
     createElement(
         "input",
@@ -1144,8 +1124,6 @@ function createPredictorMenu() {
     );
 }
 
-
-
 document.querySelector<HTMLElement>("#predmety")!.style.paddingBottom = "20px";
 
 const allMarks = document.querySelectorAll<HTMLElement>("div.znamka-v.tooltip-bubble");
@@ -1153,8 +1131,11 @@ const allMarks = document.querySelectorAll<HTMLElement>("div.znamka-v.tooltip-bu
 for (const allMark of allMarks) {
     allMark.addEventListener(
         "click",
-        // eslint-disable-next-line func-names, @typescript-eslint/no-invalid-this
-        function () {removeMark(this);},
+        // eslint-disable-next-line func-names
+        function () {
+            // eslint-disable-next-line @typescript-eslint/no-invalid-this
+            removeMark(this);
+        },
         false
     );
 }
@@ -1180,7 +1161,7 @@ if (
 ) {
     for (const element of allMarks) {
         if (element.querySelector(".dodatek > span.w-100") !== null) {
-            continue
+            continue;
         }
 
         const splitArray = element.getAttribute("data-clasif")!.split('vaha":');
@@ -1197,24 +1178,19 @@ const allSubjectNamesSelector = document.querySelectorAll(
     "div.leva:nth-child(1) > div.obal._subject_detail.link:nth-child(1) > h3:nth-child(1)"
 );
 
-allSubjects.push(...Array.from(allSubjectNamesSelector, element => element.textContent!));
+allSubjects.push(...Array.from(allSubjectNamesSelector, (element) => element.textContent!));
 
 const pointsOfFirstMarkInAllSubjects: NodeListOf<Element> = document.querySelectorAll(
     "div.znamky > div.znamka-v.tooltip-bubble:nth-child(1) > div.bod"
 );
 
-
 if (allMarks.length === pointsOfFirstMarkInAllSubjects.length) {
-    for (const [
-        index,
-        pointsOfFirstMarkInAllSubject,
-    ] of pointsOfFirstMarkInAllSubjects.entries()) {
+    for (const [index, pointsOfFirstMarkInAllSubject] of pointsOfFirstMarkInAllSubjects.entries()) {
         if (pointsOfFirstMarkInAllSubject.innerHTML !== "") {
             subjectsWithPoints.push(allSubjects[index]!);
         }
     }
-}
-else {
+} else {
     for (const pointsOfFirstMarkInAllSubject of pointsOfFirstMarkInAllSubjects) {
         if (pointsOfFirstMarkInAllSubject.innerHTML === "") {
             continue;
@@ -1259,9 +1235,7 @@ if (isReplaceTypeWithWeightOn) {
     replaceTypeWithWeight();
 }
 
-const allMarksSelector = document.querySelectorAll<HTMLElement>(
-    "div.znamka-v.tooltip-bubble"
-);
+const allMarksSelector = document.querySelectorAll<HTMLElement>("div.znamka-v.tooltip-bubble");
 
 for (const element of allMarksSelector) {
     const splitArray: DataClasif = JSON.parse(element.getAttribute("data-clasif")!);
@@ -1276,7 +1250,6 @@ for (const element of allMarksSelector) {
     const splitArrayWeight: number = splitArray.vaha;
 
     if (isSubjectWithPoints(splitArraySubject)) {
-
         const splitArrayMaxPoints: number = splitArray.bodymax;
         markArray.push(`${splitArrayMark}/${splitArrayMaxPoints}`);
 
