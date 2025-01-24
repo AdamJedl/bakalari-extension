@@ -44,3 +44,7 @@
     display: flex;
     flex-wrap: wrap;
 }
+
+.bx-viewport {
+    width: 101% !important;
+}

@@ -65,14 +65,14 @@ let isSelectedSubjectWithPoints = false;
 let isSubjectMarkWorseThan3Left = false;
 let isSubjectMarkWorseThan3Right = false;
 
-let isWideModeOn = localStorage.getItem("wideModeOn") === "true";
-let areHugeMarksOn = localStorage.getItem("hugeMarksOn") === "true";
-let isSettingsOn = localStorage.getItem("settingsOn") === "true";
-let isHideWeightFromPointsOn = localStorage.getItem("hideWeightFromPointsOn") === "true";
-let isPredictorOn = localStorage.getItem("predictorOn") === "true";
-let isRemoveMarksOn = localStorage.getItem("removeMarkOn") === "true";
-let isInstaRemoveMarksOn = localStorage.getItem("instaRemoveMarksOn") === "true";
-let isReplaceTypeWithWeightOn = localStorage.getItem("replaceTypeWithWeightOn") === "true";
+let isWideModeOn = localStorageGetBool("wideModeOn", true);
+let areHugeMarksOn = localStorageGetBool("hugeMarksOn", true);
+let isSettingsOn = localStorageGetBool("settingsOn", false);
+let isHideWeightFromPointsOn = localStorageGetBool("hideWeightFromPointsOn", false);
+let isPredictorOn = localStorageGetBool("predictorOn", true);
+let isRemoveMarksOn = localStorageGetBool("removeMarkOn", false);
+let isInstaRemoveMarksOn = localStorageGetBool("instaRemoveMarksOn", false);
+let isReplaceTypeWithWeightOn = localStorageGetBool("replaceTypeWithWeightOn", true);
 
 const subjectArray: string[] = [];
 const markArray: string[] = [];
@@ -1122,6 +1122,11 @@ function createPredictorMenu() {
         instaRemoveMarkButton,
         document.querySelector("#predictorMenuDiv")
     );
+}
+
+function localStorageGetBool(key: string, defaultValue: boolean) {
+    const value = localStorage.getItem(key);
+    return value === null ? defaultValue : value === "true";
 }
 
 document.querySelector<HTMLElement>("#predmety")!.style.paddingBottom = "20px";
