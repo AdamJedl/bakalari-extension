@@ -621,7 +621,7 @@ function wideModeButton() {
 
 function hideWeightFromMarksWithPoints() {
     const firstMarkInSubjectPoint = document.querySelectorAll(
-        "div.znamka-v.tooltip-bubble:nth-child(1) > div.bod"
+        "div.znamka-v.tooltip-bubble:nth-child(1) div.bod"
     );
 
     for (const element of firstMarkInSubjectPoint) {
@@ -638,21 +638,21 @@ function hideWeightFromMarksWithPoints() {
         const predmetRadek = getpredmetRadekFromIndex(index);
 
         let allMarksOf1SubjectWeight = predmetRadek.querySelectorAll<HTMLElement>(
-            "div.bx-wrapper:nth-child(2) > div.bx-viewport:nth-child(1) > div.znamky > div.znamka-v.tooltip-bubble > div.dodatek > span.w-100"
+            "div.bx-wrapper:nth-child(2) > div.bx-viewport:nth-child(1) > div.znamky > div.znamka-v.tooltip-bubble div.dodatek > span.w-100"
         );
         let allMarksOf1SubjectPoints = predmetRadek.querySelectorAll<HTMLElement>(
-            "div.bx-wrapper:nth-child(2) > div.bx-viewport:nth-child(1) > div.znamky > div.znamka-v.tooltip-bubble > div.bod"
+            "div.bx-wrapper:nth-child(2) > div.bx-viewport:nth-child(1) > div.znamky > div.znamka-v.tooltip-bubble div.bod"
         );
 
         if (allMarksOf1SubjectWeight.length === 0) {
             allMarksOf1SubjectWeight = predmetRadek.querySelectorAll(
-                "div.znamky > div.znamka-v.tooltip-bubble > div.dodatek > span.w-100"
+                "div.znamky > div.znamka-v.tooltip-bubble div.dodatek > span.w-100"
             );
         }
 
         if (allMarksOf1SubjectPoints.length === 0) {
             allMarksOf1SubjectPoints = predmetRadek.querySelectorAll(
-                "div.znamky > div.znamka-v.tooltip-bubble > div.bod"
+                "div.znamky > div.znamka-v.tooltip-bubble div.bod"
             );
         }
 
@@ -703,13 +703,13 @@ function hideWeightFromMarksWithPoints() {
 }
 
 function hugeMarksButton() {
-    const marksDivDodatek = document.querySelectorAll<HTMLElement>("div.znamka-v > div.dodatek");
+    const marksDivDodatek = document.querySelectorAll<HTMLElement>("div.znamka-v div.dodatek");
     const marksDivDodatekSpan = document.querySelectorAll<HTMLElement>(
-        "div.znamka-v > div.dodatek > span.w-100"
+        "div.znamka-v div.dodatek > span.w-100"
     );
 
     if (areHugeMarksOn) {
-        const marksDivNumeralHuge = document.querySelectorAll("div.znamka-v > div.obrovsky");
+        const marksDivNumeralHuge = document.querySelectorAll("div.znamka-v div.obrovsky");
 
         for (const element of marksDivNumeralHuge) {
             element.classList.remove("obrovsky");
@@ -733,11 +733,11 @@ function hugeMarksButton() {
         }
     } else {
         const marksDivNumeral = document.querySelectorAll<HTMLElement>(
-            "div.znamka-v > div.maly, div.znamka-v > div.stredni, div.znamka-v > div.velky, div.znamka-v > div.obrovsky"
+            "div.znamka-v div.maly, div.znamka-v div.stredni, div.znamka-v div.velky, div.znamka-v div.obrovsky"
         );
 
         const marksDivNumeralPoints = document.querySelectorAll<HTMLElement>(
-            "div.znamka-v > div.maly_body, div.znamka-v > div.stredni_body, div.znamka-v > div.velky_body, div.znamka-v > div.obrovsky_body"
+            "div.znamka-v div.maly_body, div.znamka-v div.stredni_body, div.znamka-v div.velky_body, div.znamka-v div.obrovsky_body"
         );
 
         for (const element of marksDivNumeral) {
@@ -953,13 +953,21 @@ function replaceTypeWithWeight() {
         alert(message.clickOnBtReplaceTypeWithWeight);
     } else {
         const allMarksWeight = document.querySelectorAll<HTMLElement>(
-            "div.znamka-v.tooltip-bubble > div.dodatek > span.w-100"
+            "div.znamka-v.tooltip-bubble div.dodatek > span.w-100"
         );
 
-        for (const element of allMarksWeight) {
-            const markJson = element.parentElement!.parentElement!.getAttribute("data-clasif");
-            if (markJson !== null) {
-                element.textContent = JSON.parse(markJson).vaha;
+        for (const markWeight of allMarksWeight) {
+            try {
+                const markJson = markWeight
+                    .closest("div.znamka-v.tooltip-bubble")
+                    .getAttribute("data-clasif");
+                const vaha = JSON.parse(markJson!).vaha;
+                if (typeof vaha !== "number" && typeof vaha !== "string") {
+                    throw new TypeError("Property 'vaha' is not number or string");
+                }
+                markWeight!.textContent = vaha;
+            } catch (error) {
+                console.warn(error);
             }
         }
     }
@@ -1161,8 +1169,8 @@ document.querySelector("div.bk-menu-hide")?.addEventListener(
 );
 
 if (
-    document.querySelectorAll<HTMLElement>("div.znamka-v > div.dodatek").length !==
-    document.querySelectorAll<HTMLElement>("div.znamka-v > div.dodatek > span.w-100").length
+    document.querySelectorAll<HTMLElement>("div.znamka-v div.dodatek").length !==
+    document.querySelectorAll<HTMLElement>("div.znamka-v div.dodatek > span.w-100").length
 ) {
     for (const element of allMarks) {
         if (element.querySelector(".dodatek > span.w-100") !== null) {
@@ -1186,7 +1194,7 @@ const allSubjectNamesSelector = document.querySelectorAll(
 allSubjects.push(...Array.from(allSubjectNamesSelector, (element) => element.textContent!));
 
 const pointsOfFirstMarkInAllSubjects: NodeListOf<Element> = document.querySelectorAll(
-    "div.znamky > div.znamka-v.tooltip-bubble:nth-child(1) > div.bod"
+    "div.znamky > div.znamka-v.tooltip-bubble:nth-child(1) div.bod"
 );
 
 if (allMarks.length === pointsOfFirstMarkInAllSubjects.length) {
