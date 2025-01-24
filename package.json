@@ -1,6 +1,6 @@
 {
     "name": "bakalari-extension",
-    "version": "1.3.0",
+    "version": "1.3.1",
     "description": "Average by subject, average overall, predictor, wide mode, big marks, stipendium...",
     "scripts": {
         "watch": "webpack --config webpack/webpack.ts --env=mode=development --env=browser=chrome --watch",
